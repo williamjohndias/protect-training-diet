@@ -239,7 +239,7 @@
     const payload = {
       workout: {
         title: workoutSession.title || 'Treino',
-        description: '',
+        description: null,
         start_time: workoutSession.startTime,
         end_time: endTime,
         is_private: false,
