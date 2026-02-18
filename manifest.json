@@ -1,0 +1,13 @@
+{
+  "name": "Protect Training",
+  "short_name": "Protect",
+  "description": "Acompanhamento de treino personalizado",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f0f12",
+  "theme_color": "#6366f1",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

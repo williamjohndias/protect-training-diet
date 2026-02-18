@@ -1,149 +1,269 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Acompanhe seus treinos com Protect Training">
+  <meta name="theme-color" id="theme-color-meta" content="#0f0f12">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Protect">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icon.svg">
   <title>Protect Training</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="app">
-    <header class="header">
-      <h1 class="logo">Protect Training</h1>
-    </header>
 
-    <main class="content">
+  <!-- HEADER -->
+  <header class="header">
+    <span class="logo">⚡ Protect</span>
+    <button class="theme-toggle" id="theme-toggle-btn" title="Alternar tema" aria-label="Alternar tema">🌙</button>
+    <button class="avatar-btn" id="avatar-btn" title="Perfil" aria-label="Abrir configurações">
+      <img src="/avatar.svg" alt="Avatar" id="avatar-img">
+    </button>
+  </header>
 
-      <!-- TREINO ATIVO (oculto por padrão) -->
+  <!-- CONTEÚDO PRINCIPAL -->
+  <main class="content">
+
+    <!-- ═══════════════════════════════ TREINO ═══════════════════════════════ -->
+    <section id="section-treino" class="section active">
+
+      <!-- Treino ativo (oculto quando não há sessão) -->
       <div id="active-workout-panel" class="panel-card hidden">
         <div class="workout-top-bar">
-          <input id="workout-title-input" type="text" class="workout-title-input" placeholder="Nome do treino">
+          <input type="text" id="workout-title" class="workout-title-input" placeholder="Nome do treino">
           <span id="workout-timer" class="workout-timer">00:00</span>
         </div>
-        <!-- Referência da rotina -->
-        <div id="routine-ref-panel" class="routine-ref-panel hidden">
-          <div class="routine-ref-header">📋 Exercícios da rotina (referência)</div>
-          <div id="routine-ref-list"></div>
-        </div>
-        <div id="workout-exercises-list"></div>
-        <button type="button" id="add-exercise-btn" class="btn-outline btn-block">+ Adicionar exercício</button>
+        <div id="routine-ref-panel" class="hidden"></div>
+        <div id="exercises-list"></div>
+        <button class="btn-outline btn-block" id="add-exercise-btn" type="button">+ Adicionar exercício</button>
         <div class="workout-footer-btns">
-          <button type="button" id="discard-workout-btn" class="btn-danger">Descartar</button>
-          <button type="button" id="finish-workout-btn" class="btn-success">Finalizar treino</button>
+          <button class="btn-success" id="finish-workout-btn" type="button">✓ Finalizar</button>
+          <button class="btn-danger"  id="discard-workout-btn" type="button">Descartar</button>
         </div>
       </div>
 
-      <!-- INICIAR TREINO LIVRE -->
-      <div id="start-workout-card" class="panel-card start-card">
+      <!-- Card de início -->
+      <div id="start-card" class="panel-card start-card">
         <div class="start-card-body">
-          <div class="start-icon">💪</div>
+          <div class="start-icon">🏋️</div>
           <h2>Pronto para treinar?</h2>
-          <p>Inicie um treino livre ou clique em um dia da sua rotina.</p>
-          <button type="button" id="start-workout-btn" class="btn-primary btn-lg">Treino livre</button>
+          <p>Inicie um treino livre ou escolha um dia da sua rotina abaixo.</p>
+          <button class="btn-primary btn-lg" id="start-free-workout-btn" type="button">Iniciar treino livre</button>
         </div>
       </div>
 
-      <!-- MINHA ROTINA -->
+      <!-- Minha Rotina -->
       <div class="panel-card">
         <div class="card-header">
           <h2>Minha Rotina</h2>
-          <button type="button" id="create-hevy-routines-btn" class="btn-hevy" title="Criar as 4 rotinas direto no Hevy">
-            + Criar no Hevy
-          </button>
+          <button class="btn-hevy" id="create-hevy-routines-btn" type="button">+ Criar no Hevy</button>
         </div>
-        <p id="hevy-routines-status" class="hevy-routines-status hidden"></p>
-        <div id="routine-days-grid" class="routine-days-grid"></div>
+        <div id="hevy-routines-status" class="hidden"></div>
+        <div class="routine-days-grid" id="routine-days-grid"></div>
       </div>
 
-      <!-- EVOLUÇÃO & PROJEÇÃO DE CARGAS -->
+      <!-- Evolução & Projeção -->
       <div class="panel-card">
-        <h2>📈 Evolução & Projeção de Cargas</h2>
-
-        <!-- Projeção por dia -->
+        <h2>📈 Evolução & Projeção</h2>
         <div class="evo-block">
-          <div class="evo-block-title">Projeção para o próximo treino</div>
+          <div class="evo-block-title">Projeção de cargas por dia</div>
           <select id="evo-day-select">
-            <option value="">Selecionar dia da rotina…</option>
-            <option value="0">D1 – Largura + Lateral</option>
-            <option value="1">D2 – Quad Sweep</option>
-            <option value="2">D3 – Espessura + Ombro 3D</option>
-            <option value="3">D4 – Densidade Perna + Posterior</option>
+            <option value="">Selecione o dia…</option>
           </select>
           <div id="projection-table"></div>
         </div>
-
-        <!-- Gráfico por exercício -->
         <div class="evo-block">
-          <div class="evo-block-title">Gráfico de evolução</div>
+          <div class="evo-block-title">Evolução de exercício</div>
           <select id="evo-exercise-select">
-            <option value="">Selecionar exercício…</option>
+            <option value="">Selecione um exercício…</option>
           </select>
-          <div id="evo-chart-wrap" class="hidden">
-            <canvas id="evo-chart" height="180"></canvas>
+          <div id="evo-chart-wrap">
+            <canvas id="evo-chart" height="200"></canvas>
           </div>
-          <p id="evo-chart-empty" class="empty hidden">Nenhum histórico encontrado para este exercício.</p>
         </div>
       </div>
 
-      <!-- TREINOS RECENTES -->
+    </section>
+
+    <!-- ═══════════════════════════════ CONFIGURAÇÕES ═══════════════════════ -->
+    <section id="section-config" class="section">
+
+      <!-- Perfil -->
       <div class="panel-card">
-        <div class="card-header">
-          <h2>Treinos recentes</h2>
-          <button type="button" id="refresh-workouts-btn" class="btn-icon" title="Carregar">&#x21BA;</button>
+        <h2>Perfil</h2>
+        <div class="settings-profile">
+          <img src="/avatar.svg" alt="Avatar" class="settings-avatar" id="settings-avatar-img">
+          <div class="settings-profile-info">
+            <h3>William John Dias</h3>
+            <p>Protect Training · D1–D4</p>
+          </div>
         </div>
-        <div id="workouts-list" class="list">
-          <p class="empty">Clique em &#x21BA; para carregar treinos do Hevy.</p>
+
+        <div class="form-row">
+          <label for="custom-avatar-url">Foto de perfil (URL ou data:image)</label>
+          <input type="url" id="custom-avatar-url" placeholder="https://… ou cole uma URL de imagem">
         </div>
+        <button class="btn-outline btn-block" id="save-avatar-btn" type="button">Salvar foto</button>
       </div>
 
-      <!-- ROTINAS DO HEVY -->
+      <!-- Aparência -->
       <div class="panel-card">
-        <div class="card-header">
-          <h2>Rotinas no Hevy</h2>
-          <button type="button" id="refresh-routines-btn" class="btn-icon" title="Carregar">&#x21BA;</button>
-        </div>
-        <div id="routines-list" class="list">
-          <p class="empty">Clique em &#x21BA; para carregar rotinas.</p>
+        <h2>Aparência</h2>
+        <div class="setting-item">
+          <div>
+            <div class="setting-label">Modo escuro</div>
+            <div class="setting-desc">Usar fundo escuro na interface</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="dark-mode-toggle" checked>
+            <span class="toggle-slider"></span>
+          </label>
         </div>
       </div>
 
-    </main>
-  </div>
+      <!-- Preferências de treino -->
+      <div class="panel-card">
+        <h2>Preferências de treino</h2>
 
-  <!-- TIMER DE DESCANSO (fixo na parte inferior) -->
+        <div class="setting-item">
+          <div>
+            <div class="setting-label">Unidades de peso</div>
+            <div class="setting-desc">Kg ou libras (lb)</div>
+          </div>
+          <div class="seg-control">
+            <button class="seg-btn active" data-unit="kg" id="unit-kg">kg</button>
+            <button class="seg-btn"        data-unit="lb" id="unit-lb">lb</button>
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <div>
+            <div class="setting-label">Descanso padrão</div>
+            <div class="setting-desc" id="global-rest-desc">90 segundos</div>
+          </div>
+          <div class="seg-control" style="font-size:.8rem;">
+            <button class="seg-btn" data-rest="60"  id="rest-60s">1min</button>
+            <button class="seg-btn active" data-rest="90" id="rest-90s">1m30</button>
+            <button class="seg-btn" data-rest="120" id="rest-120s">2min</button>
+            <button class="seg-btn" data-rest="180" id="rest-180s">3min</button>
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <div>
+            <div class="setting-label">Som no fim do descanso</div>
+            <div class="setting-desc">Bip quando o timer zerar</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="sound-toggle" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="setting-item">
+          <div>
+            <div class="setting-label">Vibração ao completar série</div>
+            <div class="setting-desc">Vibrar o dispositivo (mobile)</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="vibration-toggle" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Calculadora de anilhas -->
+      <div class="panel-card">
+        <h2>🔢 Calculadora de Anilhas</h2>
+        <div class="plate-calc">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.65rem;">
+            <div class="form-row" style="margin:0;">
+              <label for="plate-target">Carga alvo</label>
+              <input type="number" id="plate-target" placeholder="Ex: 100" min="0" step="0.5">
+            </div>
+            <div class="form-row" style="margin:0;">
+              <label for="plate-bar">Peso da barra</label>
+              <input type="number" id="plate-bar" placeholder="20" value="20" min="0" step="0.5">
+            </div>
+          </div>
+          <button class="btn-primary btn-block" id="calc-plates-btn" type="button">Calcular</button>
+          <div id="plate-result" class="plate-result hidden"></div>
+        </div>
+      </div>
+
+      <!-- Sobre -->
+      <div class="panel-card">
+        <h2>Sobre</h2>
+        <div class="setting-item">
+          <div class="setting-label">Versão</div>
+          <div class="setting-desc">1.3.0</div>
+        </div>
+        <div class="setting-item">
+          <div class="setting-label">Desenvolvido para</div>
+          <div class="setting-desc">William John Dias</div>
+        </div>
+        <button class="btn-outline btn-block" style="margin-top:.75rem;" id="install-pwa-btn" type="button">📲 Instalar no celular</button>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════ TIMER DE DESCANSO ════════════════════════════ -->
   <div id="rest-timer-panel" class="rest-timer-panel hidden">
     <div class="rest-timer-inner">
       <div class="rest-timer-top">
-        <span class="rest-timer-label">Descanso</span>
-        <button type="button" id="rest-skip-btn" class="rest-skip-btn">Pular ✕</button>
+        <span class="rest-timer-label">⏱ Descanso</span>
+        <button class="rest-skip-btn" id="rest-skip-btn" type="button">Pular ✕</button>
       </div>
       <div id="rest-timer-display" class="rest-timer-display">1:30</div>
-      <div class="rest-timer-bar-wrap"><div id="rest-timer-bar" class="rest-timer-bar"></div></div>
+      <div class="rest-timer-bar-wrap">
+        <div id="rest-timer-bar" class="rest-timer-bar" style="width:100%;background:var(--accent);"></div>
+      </div>
       <div class="rest-timer-actions">
-        <button type="button" id="rest-minus-btn">−15s</button>
-        <button type="button" id="rest-plus-btn">+15s</button>
+        <button id="rest-minus-btn" type="button">−15s</button>
+        <button id="rest-plus-btn"  type="button">+15s</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: BUSCA DE EXERCÍCIO -->
+  <!-- ═══════════════════════ MODAL — ADICIONAR EXERCÍCIO ══════════════════ -->
   <div id="exercise-modal" class="modal-overlay hidden">
-    <div class="modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
       <div class="modal-header">
-        <h3>Adicionar exercício</h3>
-        <button type="button" class="modal-close" id="close-exercise-modal">&#x2715;</button>
+        <h3 id="modal-title">Adicionar exercício</h3>
+        <button class="modal-close" id="exercise-modal-close" type="button" aria-label="Fechar">✕</button>
       </div>
       <div class="modal-body">
-        <input type="text" id="exercise-search-input" placeholder="Buscar exercício (inglês ou português)...">
-        <div id="exercise-results" class="modal-list"></div>
+        <input type="search" id="exercise-search-input" placeholder="Buscar exercício… (pt ou en)" autocomplete="off">
+        <div id="exercise-results" class="modal-list"><p class="loading-msg">Digite para buscar…</p></div>
       </div>
     </div>
   </div>
 
+  <!-- ═══════════════════════ NAV INFERIOR ════════════════════════════════ -->
+  <nav class="bottom-nav" aria-label="Navegação principal">
+    <button class="bnav-btn active" data-section="treino" aria-label="Treino">
+      <span class="bnav-icon">🏋️</span>
+      <span class="bnav-label">Treino</span>
+    </button>
+    <button class="bnav-btn" data-section="config" aria-label="Configurações">
+      <span class="bnav-icon">⚙️</span>
+      <span class="bnav-label">Config</span>
+    </button>
+  </nav>
+
+  <!-- SCRIPTS -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="config.js"></script>
   <script src="script.js"></script>
 </body>
