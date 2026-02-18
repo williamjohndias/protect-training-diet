@@ -126,6 +126,15 @@ textarea { resize: vertical; }
 .sets-table tr.set-completed td { opacity: .55; }
 .sets-table tr.set-completed td:first-child .set-num { color: var(--green); }
 
+/* Botão de tempo de descanso (por exercício) */
+.rest-time-btn { background: var(--surface2); color: var(--muted); font-size: .72rem; padding: .2rem .5rem; border-radius: 6px; border: 1px solid var(--border); flex-shrink: 0; }
+.rest-time-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Coluna "Anterior" na tabela de séries */
+.set-prev-cell { text-align: center; }
+.set-prev-badge { font-size: .72rem; font-weight: 600; color: #a5b4fc; background: rgba(99,102,241,.12); padding: .15rem .4rem; border-radius: 5px; white-space: nowrap; }
+.set-prev-none { color: var(--muted); background: transparent; }
+
 .set-num { font-size: .82rem; font-weight: 600; color: var(--muted); width: 22px; display: inline-block; }
 .set-type-select { width: 76px; padding: .3rem .35rem; font-size: .78rem; background: var(--surface2); border: 1px solid var(--border); }
 .set-input { width: 58px; padding: .3rem; font-size: .875rem; font-weight: 500; text-align: center; background: var(--surface2); border: 1px solid var(--border); }
@@ -258,6 +267,20 @@ textarea { resize: vertical; }
 .rref-ex { display: flex; justify-content: space-between; font-size: .8rem; padding: .15rem 0; border-bottom: 1px solid var(--border); }
 .rref-ex:last-child { border-bottom: none; }
 .rref-sets { color: var(--muted); font-size: .75rem; }
+
+/* ---- TIMER DE DESCANSO ---- */
+.rest-timer-panel { position: fixed; bottom: 0; left: 0; right: 0; z-index: 300; background: #13131a; border-top: 2px solid var(--accent); padding: .85rem 1.25rem 1.1rem; box-shadow: 0 -8px 32px rgba(0,0,0,.5); }
+.rest-timer-inner { max-width: 480px; margin: 0 auto; }
+.rest-timer-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: .35rem; }
+.rest-timer-label { font-size: .8rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.rest-skip-btn { background: transparent; color: var(--muted); font-size: .8rem; padding: .2rem .5rem; }
+.rest-skip-btn:hover { color: var(--red); }
+.rest-timer-display { font-size: 2.8rem; font-weight: 700; text-align: center; letter-spacing: -.03em; color: var(--text); margin: .25rem 0; }
+.rest-timer-bar-wrap { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; margin-bottom: .65rem; }
+.rest-timer-bar { height: 100%; border-radius: 3px; transition: width .9s linear, background .3s; }
+.rest-timer-actions { display: flex; gap: .5rem; justify-content: center; }
+.rest-timer-actions button { background: var(--surface2); color: var(--text); padding: .45rem 1.25rem; font-size: .875rem; font-weight: 600; border-radius: 8px; border: 1px solid var(--border); }
+.rest-timer-actions button:hover { border-color: var(--accent); color: var(--accent); }
 
 /* ---- UTILITIES ---- */
 .hidden { display: none !important; }

@@ -577,13 +577,23 @@
     const container = document.getElementById('workout-exercises-list');
     if (!workoutSession || !workoutSession.exercises.length) { container.innerHTML = ''; return; }
     container.innerHTML = workoutSession.exercises.map(ex => {
+      const restSec = ex.restSeconds != null ? ex.restSeconds : 90;
+      const restLabel = restSec === 0 ? 'Off' : (restSec >= 60 ? Math.floor(restSec/60) + 'm' + (restSec%60 ? (restSec%60)+'s' : '') : restSec + 's');
+
       const setsRows = ex.sets.map((s, idx) => {
         const opts = SET_TYPES.map(t =>
           '<option value="' + t.value + '"' + (s.type === t.value ? ' selected' : '') + '>' + t.label + '</option>'
         ).join('');
+        // Carga anterior para esta série
+        const prevSet = (ex.lastSets && (ex.lastSets[idx] || ex.lastSets[ex.lastSets.length - 1])) || null;
+        const prevBadge = prevSet
+          ? '<span class="set-prev-badge">' + (prevSet.weight_kg || '–') + '×' + (prevSet.reps || '–') + '</span>'
+          : '<span class="set-prev-badge set-prev-none">–</span>';
+
         return '<tr class="' + (s.completed ? 'set-completed' : '') + '" data-set-id="' + s.id + '">' +
           '<td><span class="set-num">' + (idx + 1) + '</span></td>' +
           '<td><select class="set-type-select" data-field="type">' + opts + '</select></td>' +
+          '<td class="set-prev-cell">' + prevBadge + '</td>' +
           '<td><input type="number" class="set-input" data-field="weight_kg" placeholder="kg" min="0" step="0.5" value="' + (s.weight_kg || '') + '"></td>' +
           '<td><input type="number" class="set-input" data-field="reps" placeholder="reps" min="0" step="1" value="' + (s.reps || '') + '"></td>' +
           '<td><button type="button" class="set-complete-btn' + (s.completed ? ' done' : '') + '">&#x2713;</button></td>' +
@@ -592,6 +602,7 @@
       }).join('');
       return '<div class="exercise-card" data-ex-id="' + ex.id + '">' +
         '<div class="exercise-card-header">' +
+          '<button type="button" class="rest-time-btn" data-seconds="' + restSec + '" title="Tempo de descanso">⏱ ' + restLabel + '</button>' +
           '<div class="ex-name-block">' +
             '<span class="ex-name">' + esc(ex.ptName || ex.title) + '</span>' +
             (ex.ptName && ex.ptName !== ex.title ? '<span class="ex-name-en">' + esc(ex.title) + '</span>' : '') +
@@ -606,7 +617,7 @@
           '<button type="button" class="ex-delete">&#x2715;</button>' +
         '</div>' +
         '<div class="exercise-notes"><textarea class="ex-notes" rows="1" placeholder="Notas">' + esc(ex.notes || '') + '</textarea></div>' +
-        '<table class="sets-table"><thead><tr><th>#</th><th>Tipo</th><th>Kg</th><th>Reps</th><th></th><th></th></tr></thead>' +
+        '<table class="sets-table"><thead><tr><th>#</th><th>Tipo</th><th>Ant.</th><th>Kg</th><th>Reps</th><th></th><th></th></tr></thead>' +
         '<tbody>' + setsRows + '</tbody></table>' +
         '<div class="add-set-row"><button type="button" class="add-set-btn">+ Série</button></div>' +
         '</div>';
@@ -647,9 +658,34 @@
         const setId = this.closest('tr').getAttribute('data-set-id');
         const exId = this.closest('.exercise-card').getAttribute('data-ex-id');
         const ex = workoutSession.exercises.find(e => e.id === exId);
-        if (ex) { const s = ex.sets.find(s => s.id === setId); if (s) { s.completed = !s.completed; saveSession(); renderExercises(); } }
+        if (!ex) return;
+        const s = ex.sets.find(s => s.id === setId);
+        if (!s) return;
+        s.completed = !s.completed;
+        saveSession();
+        renderExercises();
+        // Inicia timer de descanso ao completar uma série
+        if (s.completed) {
+          const rest = ex.restSeconds != null ? ex.restSeconds : 90;
+          if (rest > 0) startRestTimer(rest);
+        }
       });
     });
+    // Configurar tempo de descanso por exercício
+    container.querySelectorAll('.rest-time-btn').forEach(btn => {
+      btn.addEventListener('click', function () {
+        const exId = this.closest('.exercise-card').getAttribute('data-ex-id');
+        const ex = workoutSession.exercises.find(e => e.id === exId);
+        if (!ex) return;
+        const options = [60, 90, 120, 180, 0];
+        const cur = ex.restSeconds != null ? ex.restSeconds : 90;
+        const next = options[(options.indexOf(cur) + 1) % options.length];
+        ex.restSeconds = next;
+        saveSession();
+        renderExercises();
+      });
+    });
+
     container.querySelectorAll('.set-type-select, .set-input').forEach(input => {
       input.addEventListener('change', function () {
         const setId = this.closest('tr').getAttribute('data-set-id');
@@ -807,6 +843,64 @@
     renderExercises();
     document.getElementById('exercise-modal').classList.add('hidden');
   }
+
+  // =====================================================================
+  // TIMER DE DESCANSO
+  // =====================================================================
+  let restInterval = null;
+  let restRemaining = 0;
+  let restTotal = 0;
+
+  function startRestTimer(seconds) {
+    clearInterval(restInterval);
+    restRemaining = seconds;
+    restTotal = seconds;
+    document.getElementById('rest-timer-panel').classList.remove('hidden');
+    updateRestDisplay();
+    restInterval = setInterval(function () {
+      restRemaining--;
+      updateRestDisplay();
+      if (restRemaining <= 0) {
+        clearInterval(restInterval);
+        // Vibração ao terminar (se disponível)
+        if (navigator.vibrate) navigator.vibrate([300, 100, 300]);
+        setTimeout(function () {
+          document.getElementById('rest-timer-panel').classList.add('hidden');
+        }, 800);
+      }
+    }, 1000);
+  }
+
+  function updateRestDisplay() {
+    const m = Math.floor(restRemaining / 60);
+    const s = restRemaining % 60;
+    document.getElementById('rest-timer-display').textContent =
+      (m > 0 ? m + ':' + String(s).padStart(2, '0') : s + 's');
+    const pct = restTotal > 0 ? (restRemaining / restTotal) * 100 : 0;
+    document.getElementById('rest-timer-bar').style.width = pct + '%';
+    // Cor muda conforme diminui
+    const bar = document.getElementById('rest-timer-bar');
+    if (pct > 50) bar.style.background = '#6366f1';
+    else if (pct > 20) bar.style.background = '#f59e0b';
+    else bar.style.background = '#ef4444';
+  }
+
+  document.getElementById('rest-skip-btn').addEventListener('click', function () {
+    clearInterval(restInterval);
+    document.getElementById('rest-timer-panel').classList.add('hidden');
+  });
+
+  document.getElementById('rest-minus-btn').addEventListener('click', function () {
+    restRemaining = Math.max(0, restRemaining - 15);
+    restTotal = Math.max(restTotal, restRemaining);
+    updateRestDisplay();
+  });
+
+  document.getElementById('rest-plus-btn').addEventListener('click', function () {
+    restRemaining += 15;
+    restTotal = Math.max(restTotal, restRemaining);
+    updateRestDisplay();
+  });
 
   // =====================================================================
   // EVOLUÇÃO & PROJEÇÃO DE CARGAS

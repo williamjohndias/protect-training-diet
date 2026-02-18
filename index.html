@@ -113,6 +113,22 @@
     </main>
   </div>
 
+  <!-- TIMER DE DESCANSO (fixo na parte inferior) -->
+  <div id="rest-timer-panel" class="rest-timer-panel hidden">
+    <div class="rest-timer-inner">
+      <div class="rest-timer-top">
+        <span class="rest-timer-label">Descanso</span>
+        <button type="button" id="rest-skip-btn" class="rest-skip-btn">Pular ✕</button>
+      </div>
+      <div id="rest-timer-display" class="rest-timer-display">1:30</div>
+      <div class="rest-timer-bar-wrap"><div id="rest-timer-bar" class="rest-timer-bar"></div></div>
+      <div class="rest-timer-actions">
+        <button type="button" id="rest-minus-btn">−15s</button>
+        <button type="button" id="rest-plus-btn">+15s</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: BUSCA DE EXERCÍCIO -->
   <div id="exercise-modal" class="modal-overlay hidden">
     <div class="modal">
