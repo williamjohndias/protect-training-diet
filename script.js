@@ -340,27 +340,54 @@
       if (msg) msg.remove();
     }
 
-    // Monta a lista de exercícios já com séries pré-definidas
+    // Monta a lista de exercícios já com séries pré-definidas + carga anterior
     const exercises = [];
     const notFound = [];
-    day.groups.forEach(function (g) {
-      g.exercises.forEach(function (ex) {
+
+    for (const g of day.groups) {
+      for (const ex of g.exercises) {
         const match = findBestMatch(ex.search);
-        if (!match) { notFound.push(ex.name); return; }
+        if (!match) { notFound.push(ex.name); continue; }
+
         const repRange = parseReps(ex.reps);
+
+        // Busca última sessão do exercício
+        let lastSets = [];
+        let lastDate = null;
+        try {
+          const hist = await fetchExerciseHistory(match.id);
+          const sessions = groupBySession(hist);
+          if (sessions.length) {
+            const last = sessions[sessions.length - 1];
+            lastDate = last.date;
+            lastSets = last.sets
+              .filter(function (s) { return s.set_type === 'normal' && s.weight_kg > 0; })
+              .map(function (s) { return { weight_kg: s.weight_kg, reps: s.reps || repRange.start }; });
+          }
+        } catch (_) {}
+
         exercises.push({
           id: uid(),
           template_id: match.id,
-          title: match.title,         // nome em inglês do Hevy
-          ptName: ex.name,            // nome em português (referência)
+          title: match.title,
+          ptName: ex.name,
           muscle: match.primary_muscle_group || '',
           notes: '',
-          sets: Array.from({ length: ex.sets }, function () {
-            return { id: uid(), type: 'normal', weight_kg: '', reps: String(repRange.start), completed: false };
+          lastDate,
+          lastSets, // referência visual
+          sets: Array.from({ length: ex.sets }, function (_, i) {
+            const prev = lastSets[i] || lastSets[lastSets.length - 1] || null;
+            return {
+              id: uid(),
+              type: 'normal',
+              weight_kg: prev ? String(prev.weight_kg) : '',
+              reps: prev ? String(prev.reps) : String(repRange.start),
+              completed: false,
+            };
           }),
         });
-      });
-    });
+      }
+    }
 
     workoutSession = {
       title: day.day + ' – ' + day.name,
@@ -568,6 +595,12 @@
           '<div class="ex-name-block">' +
             '<span class="ex-name">' + esc(ex.ptName || ex.title) + '</span>' +
             (ex.ptName && ex.ptName !== ex.title ? '<span class="ex-name-en">' + esc(ex.title) + '</span>' : '') +
+            (ex.lastSets && ex.lastSets.length
+              ? '<span class="ex-last-session">Última (' +
+                  new Date(ex.lastDate).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + '): ' +
+                  ex.lastSets.map(function (s) { return s.weight_kg + 'kg×' + s.reps; }).join(' · ') +
+                '</span>'
+              : '<span class="ex-last-session ex-last-none">Sem histórico</span>') +
           '</div>' +
           (ex.muscle ? '<span class="ex-muscle">' + esc(ex.muscle) + '</span>' : '') +
           '<button type="button" class="ex-delete">&#x2715;</button>' +

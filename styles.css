@@ -107,6 +107,8 @@ textarea { resize: vertical; }
 .ex-name-block { flex: 1; min-width: 0; }
 .exercise-card-header .ex-name { font-weight: 600; font-size: .9rem; display: block; }
 .ex-name-en { font-size: .75rem; color: var(--muted); display: block; }
+.ex-last-session { font-size: .72rem; color: #a5b4fc; display: block; margin-top: .1rem; }
+.ex-last-none { color: var(--muted); }
 .exercise-card-header .ex-muscle { font-size: .75rem; color: var(--muted); background: var(--surface2); padding: .2rem .55rem; border-radius: 20px; }
 .exercise-card-header .ex-delete { background: transparent; color: var(--muted); font-size: .9rem; padding: .2rem .4rem; }
 .exercise-card-header .ex-delete:hover { color: var(--red); }
