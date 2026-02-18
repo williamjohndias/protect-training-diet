@@ -140,49 +140,69 @@
   // =====================================================================
   // CRIAR ROTINAS NO HEVY
   // =====================================================================
+  // Encontra o melhor exercício no cache por search term (inglês)
+  function findBestMatch(searchTerm) {
+    if (!allExercises || !allExercises.length) return null;
+    const term = searchTerm.toLowerCase();
+    const words = term.split(' ').filter(w => w.length > 2);
+
+    // 1. Título começa exatamente com o termo
+    let found = allExercises.find(ex => ex.title.toLowerCase().startsWith(term));
+    if (found) return found;
+
+    // 2. Título contém o termo completo
+    found = allExercises.find(ex => ex.title.toLowerCase().includes(term));
+    if (found) return found;
+
+    // 3. Título contém todas as palavras do termo
+    found = allExercises.find(ex => {
+      const t = ex.title.toLowerCase();
+      return words.every(w => t.includes(w));
+    });
+    if (found) return found;
+
+    // 4. Título contém a maioria das palavras
+    if (words.length > 1) {
+      found = allExercises.find(ex => {
+        const t = ex.title.toLowerCase();
+        const matched = words.filter(w => t.includes(w)).length;
+        return matched >= Math.ceil(words.length * 0.6);
+      });
+    }
+    return found || null;
+  }
+
   async function createRoutinesInHevy() {
     const btn = document.getElementById('create-hevy-routines-btn');
     const statusEl = document.getElementById('hevy-routines-status');
 
     btn.disabled = true;
     statusEl.className = 'hevy-routines-status info';
-    statusEl.textContent = 'Buscando exercícios no Hevy…';
+    statusEl.textContent = 'Carregando lista de exercícios do Hevy…';
 
-    // Coletar exercícios únicos por search term
-    const uniqueSearches = {};
-    MY_ROUTINE.forEach(day => {
-      day.groups.forEach(g => {
-        g.exercises.forEach(ex => {
-          if (!uniqueSearches[ex.search]) uniqueSearches[ex.search] = null;
-        });
+    // Garantir que o cache de exercícios está carregado
+    if (!allExercises) {
+      await loadAllExercises(function (count) {
+        statusEl.textContent = 'Carregando exercícios… (' + count + ' carregados)';
       });
-    });
-
-    // Buscar ID de cada exercício
-    const notFound = [];
-    const searchTerms = Object.keys(uniqueSearches);
-    for (let i = 0; i < searchTerms.length; i++) {
-      const term = searchTerms[i];
-      statusEl.textContent = `Buscando exercício ${i + 1}/${searchTerms.length}: ${term}…`;
-      try {
-        const data = await hevyGet('/v1/exercise_templates?page=1&pageSize=5&search_term=' + encodeURIComponent(term));
-        const items = toArr(data.exercise_templates || data.data || data);
-        if (items.length) {
-          uniqueSearches[term] = items[0].id;
-        } else {
-          notFound.push(term);
-        }
-      } catch (_) {
-        notFound.push(term);
-      }
     }
 
-    // Construir mapa exercício por nome → template_id
+    statusEl.textContent = allExercises.length + ' exercícios carregados. Mapeando rotinas…';
+
+    // Mapear cada exercício da rotina para um template_id usando o cache
     const exIdMap = {};
+    const notFound = [];
     MY_ROUTINE.forEach(day => {
       day.groups.forEach(g => {
         g.exercises.forEach(ex => {
-          exIdMap[ex.name] = uniqueSearches[ex.search] || null;
+          if (exIdMap[ex.name] !== undefined) return; // já mapeado
+          const match = findBestMatch(ex.search);
+          if (match) {
+            exIdMap[ex.name] = match.id;
+          } else {
+            exIdMap[ex.name] = null;
+            notFound.push(ex.name + ' (buscado: ' + ex.search + ')');
+          }
         });
       });
     });
