@@ -1,0 +1,7 @@
+node_modules/
+.DS_Store
+Thumbs.db
+
+# config.js pode conter chaves — use config.example.js como referência
+# Descomente a linha abaixo se quiser ignorar o config.js no git:
+# config.js

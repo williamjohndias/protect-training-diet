@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Protect Training & Diet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1>Protect Training & Diet</h1>
+      <nav class="tabs">
+        <button type="button" class="tab active" data-tab="treino">Treino</button>
+        <button type="button" class="tab" data-tab="dieta">Dieta</button>
+      </nav>
+    </header>
+
+    <main class="content">
+      <!-- Aba Treino -->
+      <section id="treino" class="tab-panel active">
+        <div class="panel-card">
+          <h2>Configuração Hevy</h2>
+          <p class="hint">Sua chave API está em <a href="https://hevy.com/settings?developer" target="_blank" rel="noopener">hevy.com/settings → Developer</a> (Hevy Pro).</p>
+          <div class="form-row">
+            <label for="hevy-api-key">Chave API Hevy</label>
+            <input type="password" id="hevy-api-key" placeholder="Cole sua chave API">
+            <div class="btn-group">
+              <button type="button" id="save-hevy-key">Salvar</button>
+              <button type="button" id="clear-hevy-key" class="btn-secondary">Limpar</button>
+            </div>
+          </div>
+          <p id="hevy-status" class="status"></p>
+        </div>
+
+        <div class="panel-card">
+          <h2>Meus treinos</h2>
+          <div class="toolbar">
+            <button type="button" id="refresh-workouts">Atualizar treinos</button>
+          </div>
+          <div id="workouts-list" class="list">
+            <p class="empty">Salve sua chave Hevy e clique em "Atualizar treinos".</p>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <h2>Rotinas</h2>
+          <div id="routines-list" class="list">
+            <p class="empty">Carregue as rotinas após configurar a API.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Aba Dieta -->
+      <section id="dieta" class="tab-panel">
+        <div class="panel-card">
+          <h2>Nova refeição</h2>
+          <form id="diet-form" class="form">
+            <div class="form-row">
+              <label for="meal-date">Data</label>
+              <input type="date" id="meal-date" required>
+            </div>
+            <div class="form-row">
+              <label for="meal-type">Refeição</label>
+              <select id="meal-type">
+                <option value="cafe">Café da manhã</option>
+                <option value="lanche_manha">Lanche manhã</option>
+                <option value="almoco">Almoço</option>
+                <option value="lanche_tarde">Lanche tarde</option>
+                <option value="jantar">Jantar</option>
+                <option value="ceia">Ceia</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="meal-description">O que comeu</label>
+              <textarea id="meal-description" rows="3" placeholder="Ex: Arroz, frango, salada..." required></textarea>
+            </div>
+            <div class="form-row">
+              <label for="meal-calories">Calorias (opcional)</label>
+              <input type="number" id="meal-calories" placeholder="Ex: 450" min="0" step="1">
+            </div>
+            <button type="submit">Adicionar refeição</button>
+          </form>
+        </div>
+
+        <div class="panel-card">
+          <h2>Registro de dieta</h2>
+          <div class="toolbar">
+            <label>Filtrar por data:</label>
+            <input type="date" id="filter-date">
+            <button type="button" id="filter-diet">Filtrar</button>
+            <button type="button" id="show-all-diet">Ver tudo</button>
+          </div>
+          <div id="diet-list" class="list">
+            <p class="empty">Nenhuma refeição registrada. Adicione acima.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
