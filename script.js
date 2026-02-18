@@ -318,18 +318,66 @@
     });
   }
 
-  function startWorkoutFromRoutine(dayIdx) {
+  async function startWorkoutFromRoutine(dayIdx) {
     const day = MY_ROUTINE[dayIdx];
+    const btn = document.querySelector('.rday-start-btn[data-idx="' + dayIdx + '"]');
+    const grid = document.getElementById('routine-days-grid');
+
+    if (btn) { btn.disabled = true; btn.textContent = 'Carregando exercícios…'; }
+
+    // Garante que o cache de exercícios está carregado
+    if (!allExercises) {
+      const statusDiv = document.createElement('p');
+      statusDiv.className = 'loading-msg';
+      statusDiv.id = 'routine-load-msg';
+      statusDiv.textContent = 'Carregando exercícios do Hevy…';
+      grid.prepend(statusDiv);
+
+      await loadAllExercises(function (count) {
+        statusDiv.textContent = 'Carregando exercícios… (' + count + ' encontrados)';
+      });
+      const msg = document.getElementById('routine-load-msg');
+      if (msg) msg.remove();
+    }
+
+    // Monta a lista de exercícios já com séries pré-definidas
+    const exercises = [];
+    const notFound = [];
+    day.groups.forEach(function (g) {
+      g.exercises.forEach(function (ex) {
+        const match = findBestMatch(ex.search);
+        if (!match) { notFound.push(ex.name); return; }
+        const repRange = parseReps(ex.reps);
+        exercises.push({
+          id: uid(),
+          template_id: match.id,
+          title: match.title,         // nome em inglês do Hevy
+          ptName: ex.name,            // nome em português (referência)
+          muscle: match.primary_muscle_group || '',
+          notes: '',
+          sets: Array.from({ length: ex.sets }, function () {
+            return { id: uid(), type: 'normal', weight_kg: '', reps: String(repRange.start), completed: false };
+          }),
+        });
+      });
+    });
+
     workoutSession = {
       title: day.day + ' – ' + day.name,
       startTime: new Date().toISOString(),
-      exercises: [],
+      exercises,
       routineDayIdx: dayIdx,
     };
     saveSession();
+
+    if (btn) { btn.disabled = false; btn.textContent = 'Iniciar ' + day.day; }
+
     showWorkoutPanel();
     startTimer();
-    renderRoutineReference(dayIdx);
+
+    if (notFound.length) {
+      alert('Exercícios não encontrados (adicione manualmente):\n• ' + notFound.join('\n• '));
+    }
   }
 
   function renderRoutineReference(dayIdx) {
@@ -517,7 +565,10 @@
       }).join('');
       return '<div class="exercise-card" data-ex-id="' + ex.id + '">' +
         '<div class="exercise-card-header">' +
-          '<span class="ex-name">' + esc(ex.title) + '</span>' +
+          '<div class="ex-name-block">' +
+            '<span class="ex-name">' + esc(ex.ptName || ex.title) + '</span>' +
+            (ex.ptName && ex.ptName !== ex.title ? '<span class="ex-name-en">' + esc(ex.title) + '</span>' : '') +
+          '</div>' +
           (ex.muscle ? '<span class="ex-muscle">' + esc(ex.muscle) + '</span>' : '') +
           '<button type="button" class="ex-delete">&#x2715;</button>' +
         '</div>' +
