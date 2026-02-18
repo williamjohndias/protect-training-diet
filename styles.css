@@ -194,5 +194,37 @@ textarea { resize: vertical; }
 .np-item:first-child .np-value { color: var(--accent); }
 .np-item .np-label { font-size: .72rem; color: var(--muted); }
 
+/* ---- MINHA ROTINA ---- */
+.routine-days-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .65rem; }
+@media (max-width: 480px) { .routine-days-grid { grid-template-columns: 1fr; } }
+
+.rday-card { background: var(--bg); border: 1px solid var(--border); border-top: 3px solid var(--day-color, var(--accent)); border-radius: var(--r-sm); overflow: hidden; }
+.rday-header { display: flex; align-items: center; gap: .5rem; padding: .65rem .75rem .5rem; }
+.rday-badge { font-size: .78rem; font-weight: 700; color: #fff; background: var(--day-color, var(--accent)); padding: .18rem .55rem; border-radius: 20px; flex-shrink: 0; }
+.rday-name { flex: 1; font-size: .85rem; font-weight: 600; }
+.rday-count { font-size: .75rem; color: var(--muted); flex-shrink: 0; }
+
+.rday-exercises { padding: .25rem .75rem .5rem; }
+.rday-group-name { font-size: .72rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin: .5rem 0 .25rem; }
+.rday-ex { display: flex; justify-content: space-between; align-items: center; padding: .18rem 0; font-size: .82rem; border-bottom: 1px solid var(--border); }
+.rday-ex:last-child { border-bottom: none; }
+.rday-ex-name { color: var(--text); }
+.rday-ex-sets { font-size: .75rem; color: var(--muted); white-space: nowrap; margin-left: .5rem; }
+
+.rday-footer { display: flex; gap: .4rem; padding: .5rem .65rem; border-top: 1px solid var(--border); background: var(--surface2); }
+.rday-toggle-btn { flex: 1; background: transparent; color: var(--muted); font-size: .78rem; padding: .3rem; }
+.rday-toggle-btn:hover { color: var(--text); }
+.rday-start-btn { background: var(--day-color, var(--accent)); color: #fff; font-size: .8rem; font-weight: 600; padding: .35rem .75rem; border-radius: 6px; }
+.rday-start-btn:hover { opacity: .88; }
+
+/* ---- REFERÊNCIA DE ROTINA (no treino ativo) ---- */
+.routine-ref-panel { background: var(--bg); border: 1px solid var(--border); border-radius: var(--r-sm); padding: .65rem .75rem; margin-bottom: .75rem; }
+.routine-ref-header { font-size: .8rem; font-weight: 600; color: var(--muted); margin-bottom: .5rem; }
+.rref-group { margin-bottom: .5rem; }
+.rref-group-name { font-size: .72rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-bottom: .2rem; }
+.rref-ex { display: flex; justify-content: space-between; font-size: .8rem; padding: .15rem 0; border-bottom: 1px solid var(--border); }
+.rref-ex:last-child { border-bottom: none; }
+.rref-sets { color: var(--muted); font-size: .75rem; }
+
 /* ---- UTILITIES ---- */
 .hidden { display: none !important; }

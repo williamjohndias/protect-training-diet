@@ -30,6 +30,11 @@
             <input id="workout-title-input" type="text" class="workout-title-input" placeholder="Nome do treino">
             <span id="workout-timer" class="workout-timer">00:00</span>
           </div>
+          <!-- Referência da rotina (aparece quando treino é iniciado por uma rotina) -->
+          <div id="routine-ref-panel" class="routine-ref-panel hidden">
+            <div class="routine-ref-header">📋 Exercícios da rotina (referência)</div>
+            <div id="routine-ref-list"></div>
+          </div>
           <div id="workout-exercises-list"></div>
           <button type="button" id="add-exercise-btn" class="btn-outline btn-block">+ Adicionar exercício</button>
           <div class="workout-footer-btns">
@@ -43,9 +48,15 @@
           <div class="start-card-body">
             <div class="start-icon">💪</div>
             <h2>Pronto para treinar?</h2>
-            <p>Registre exercícios e séries em tempo real.</p>
-            <button type="button" id="start-workout-btn" class="btn-primary btn-lg">Iniciar treino</button>
+            <p>Inicie um treino livre ou escolha um dia da sua rotina abaixo.</p>
+            <button type="button" id="start-workout-btn" class="btn-primary btn-lg">Treino livre</button>
           </div>
+        </div>
+
+        <!-- MINHA ROTINA -->
+        <div class="panel-card">
+          <h2>Minha Rotina</h2>
+          <div id="routine-days-grid" class="routine-days-grid"></div>
         </div>
 
         <!-- TREINOS RECENTES -->

@@ -6,6 +6,78 @@
   // =====================================================================
   const WORKOUT_STORAGE_KEY = 'protect_workout_session';
 
+  const MY_ROUTINE = [
+    {
+      day: 'D1', name: 'Largura + Lateral', color: '#6366f1',
+      groups: [
+        { name: 'Costas Largura', exercises: [
+          { name: 'Pulldown Aberto', sets: 3, reps: '6–8' },
+          { name: 'Pulldown Unilateral', sets: 3, reps: '8–10' },
+          { name: 'Straight Arm Pulldown', sets: 2, reps: '10–12' },
+        ]},
+        { name: 'Lateral (volume alto)', exercises: [
+          { name: 'Elevação Lateral Halter', sets: 4, reps: '12–15' },
+          { name: 'Elevação Lateral Cabo', sets: 3, reps: '12–15 (rest-pause)' },
+        ]},
+        { name: 'Peito (manutenção)', exercises: [
+          { name: 'Supino Inclinado 15–30°', sets: 3, reps: '6–8' },
+          { name: 'Crucifixo Inclinado Leve', sets: 2, reps: '10–12' },
+        ]},
+      ],
+    },
+    {
+      day: 'D2', name: 'Quad Sweep', color: '#22c55e',
+      groups: [
+        { name: 'Quadríceps', exercises: [
+          { name: 'Hack Squat', sets: 3, reps: '6–8' },
+          { name: 'Leg Press (pés baixos)', sets: 3, reps: '8–10' },
+          { name: 'Bulgarian Split Squat', sets: 2, reps: '8–10' },
+          { name: 'Extensora', sets: 3, reps: '12–15 (1 drop)' },
+          { name: 'Flexora', sets: 2, reps: '8–10' },
+        ]},
+        { name: 'Panturrilha', exercises: [
+          { name: 'Panturrilha', sets: 3, reps: '12–15' },
+        ]},
+      ],
+    },
+    {
+      day: 'D3', name: 'Espessura + Ombro 3D', color: '#f59e0b',
+      groups: [
+        { name: 'Costas Espessura', exercises: [
+          { name: 'Remada Pesada', sets: 3, reps: '6–8' },
+          { name: 'Remada Unilateral', sets: 2, reps: '8–10' },
+        ]},
+        { name: 'Ombro', exercises: [
+          { name: 'Overhead Press', sets: 3, reps: '6–8' },
+          { name: 'Elevação Lateral Halter', sets: 3, reps: '12–15' },
+          { name: 'Crucifixo Invertido', sets: 3, reps: '12–15' },
+        ]},
+        { name: 'Peito + Tríceps', exercises: [
+          { name: 'Supino Declinado / Convergente Baixo', sets: 3, reps: '6–8' },
+          { name: 'Crossover de Cima para Baixo', sets: 2, reps: '10–12' },
+          { name: 'Tríceps', sets: 2, reps: '8–10' },
+        ]},
+      ],
+    },
+    {
+      day: 'D4', name: 'Densidade Perna + Posterior', color: '#a855f7',
+      groups: [
+        { name: 'Perna', exercises: [
+          { name: 'Leg Press Pesado', sets: 3, reps: '6–8' },
+          { name: 'Hack Squat Controlado', sets: 2, reps: '8–10' },
+        ]},
+        { name: 'Posterior', exercises: [
+          { name: 'Stiff / Romanian Deadlift', sets: 3, reps: '6–8' },
+          { name: 'Flexora', sets: 2, reps: '8–10' },
+          { name: 'Extensora', sets: 2, reps: '12–15' },
+        ]},
+        { name: 'Panturrilha', exercises: [
+          { name: 'Panturrilha', sets: 3, reps: '12–15' },
+        ]},
+      ],
+    },
+  ];
+
   const MEAL_LABELS = {
     cafe: 'Café da manhã',
     lanche_manha: 'Lanche manhã',
@@ -178,11 +250,15 @@
     document.getElementById('active-workout-panel').classList.remove('hidden');
     document.getElementById('workout-title-input').value = workoutSession.title;
     renderExercises();
+    if (workoutSession.routineDayIdx != null) {
+      renderRoutineReference(workoutSession.routineDayIdx);
+    }
   }
 
   function hideWorkoutPanel() {
     document.getElementById('active-workout-panel').classList.add('hidden');
     document.getElementById('start-workout-card').classList.remove('hidden');
+    document.getElementById('routine-ref-panel').classList.add('hidden');
     stopTimer();
   }
 
@@ -204,6 +280,82 @@
   function stopTimer() {
     if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
     document.getElementById('workout-timer').textContent = '00:00';
+  }
+
+  // =====================================================================
+  // RENDERIZAR GRADE DE ROTINA
+  // =====================================================================
+  function renderRoutineDays() {
+    const grid = document.getElementById('routine-days-grid');
+    grid.innerHTML = MY_ROUTINE.map(function (day, idx) {
+      const totalEx = day.groups.reduce(function (n, g) { return n + g.exercises.length; }, 0);
+      const exList = day.groups.map(function (g) {
+        return '<div class="rday-group-name">' + esc(g.name) + '</div>' +
+          g.exercises.map(function (ex) {
+            return '<div class="rday-ex"><span class="rday-ex-name">' + esc(ex.name) + '</span>' +
+              '<span class="rday-ex-sets">' + ex.sets + 'x ' + esc(ex.reps) + '</span></div>';
+          }).join('');
+      }).join('');
+      return '<div class="rday-card" style="--day-color:' + day.color + '">' +
+        '<div class="rday-header">' +
+          '<span class="rday-badge">' + esc(day.day) + '</span>' +
+          '<span class="rday-name">' + esc(day.name) + '</span>' +
+          '<span class="rday-count">' + totalEx + ' ex.</span>' +
+        '</div>' +
+        '<div class="rday-exercises hidden">' + exList + '</div>' +
+        '<div class="rday-footer">' +
+          '<button type="button" class="rday-toggle-btn">Ver exercícios</button>' +
+          '<button type="button" class="rday-start-btn" data-idx="' + idx + '">Iniciar ' + esc(day.day) + '</button>' +
+        '</div>' +
+        '</div>';
+    }).join('');
+
+    grid.querySelectorAll('.rday-toggle-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const card = this.closest('.rday-card');
+        const list = card.querySelector('.rday-exercises');
+        const expanded = !list.classList.contains('hidden');
+        list.classList.toggle('hidden', expanded);
+        this.textContent = expanded ? 'Ver exercícios' : 'Ocultar';
+      });
+    });
+
+    grid.querySelectorAll('.rday-start-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const idx = parseInt(this.getAttribute('data-idx'));
+        startWorkoutFromRoutine(idx);
+      });
+    });
+  }
+
+  function startWorkoutFromRoutine(dayIdx) {
+    const day = MY_ROUTINE[dayIdx];
+    const now = new Date();
+    workoutSession = {
+      title: day.day + ' – ' + day.name,
+      startTime: now.toISOString(),
+      exercises: [],
+      routineDayIdx: dayIdx,
+    };
+    saveSession();
+    showWorkoutPanel();
+    startTimer();
+    renderRoutineReference(dayIdx);
+  }
+
+  function renderRoutineReference(dayIdx) {
+    const panel = document.getElementById('routine-ref-panel');
+    const list = document.getElementById('routine-ref-list');
+    if (dayIdx == null) { panel.classList.add('hidden'); return; }
+    const day = MY_ROUTINE[dayIdx];
+    panel.classList.remove('hidden');
+    list.innerHTML = day.groups.map(function (g) {
+      return '<div class="rref-group"><div class="rref-group-name">' + esc(g.name) + '</div>' +
+        g.exercises.map(function (ex) {
+          return '<div class="rref-ex"><span>' + esc(ex.name) + '</span>' +
+            '<span class="rref-sets">' + ex.sets + 'x ' + esc(ex.reps) + '</span></div>';
+        }).join('') + '</div>';
+    }).join('');
   }
 
   document.getElementById('start-workout-btn').addEventListener('click', startWorkout);
@@ -494,9 +646,17 @@
     if (!q) return;
     const el = document.getElementById('food-results');
     el.innerHTML = '<p class="loading-msg">Buscando alimentos…</p>';
-    fsSearch('foods.search', { search_expression: q, max_results: '10', page_number: '0', language: 'pt', region: 'BR' })
+    fsSearch('foods.search', { search_expression: q, max_results: '10', page_number: '0' })
       .then(function (data) {
-        if (data.error) throw new Error(data.error);
+        if (data.error) {
+          const msg = typeof data.error === 'string' ? data.error
+            : (data.error.message || JSON.stringify(data.error));
+          // Código 204 = nenhum resultado encontrado
+          if ((data.error.code === '204') || msg.toLowerCase().includes('no foods found')) {
+            throw new Error('Nenhum alimento encontrado para "' + q + '".');
+          }
+          throw new Error(msg);
+        }
         const foods = toArr((data.foods || {}).food);
         if (!foods.length) { el.innerHTML = '<p class="empty">Nenhum alimento encontrado.</p>'; return; }
         el.innerHTML = foods.map(function (food) {
@@ -713,6 +873,9 @@
   const diaryInput = document.getElementById('diary-date-input');
   diaryInput.value = today();
   diaryInput.max = today();
+
+  // Renderizar grade de rotina
+  renderRoutineDays();
 
   // Restaurar sessão de treino se havia uma ativa
   loadSession();
