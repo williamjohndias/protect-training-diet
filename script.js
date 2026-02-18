@@ -2,7 +2,7 @@
   'use strict';
 
   // =====================================================================
-  // CONSTANTES & ESTADO
+  // CONSTANTES
   // =====================================================================
   const WORKOUT_STORAGE_KEY = 'protect_workout_session';
 
@@ -11,17 +11,17 @@
       day: 'D1', name: 'Largura + Lateral', color: '#6366f1',
       groups: [
         { name: 'Costas Largura', exercises: [
-          { name: 'Pulldown Aberto', sets: 3, reps: '6–8' },
-          { name: 'Pulldown Unilateral', sets: 3, reps: '8–10' },
-          { name: 'Straight Arm Pulldown', sets: 2, reps: '10–12' },
+          { name: 'Pulldown Aberto',       search: 'Lat Pulldown',               sets: 3, reps: '6-8'   },
+          { name: 'Pulldown Unilateral',   search: 'Lat Pulldown Single Arm',    sets: 3, reps: '8-10'  },
+          { name: 'Straight Arm Pulldown', search: 'Straight Arm Pulldown',      sets: 2, reps: '10-12' },
         ]},
         { name: 'Lateral (volume alto)', exercises: [
-          { name: 'Elevação Lateral Halter', sets: 4, reps: '12–15' },
-          { name: 'Elevação Lateral Cabo', sets: 3, reps: '12–15 (rest-pause)' },
+          { name: 'Elevação Lateral Halter', search: 'Lateral Raise Dumbbell',   sets: 4, reps: '12-15' },
+          { name: 'Elevação Lateral Cabo',   search: 'Lateral Raise Cable',      sets: 3, reps: '12-15' },
         ]},
         { name: 'Peito (manutenção)', exercises: [
-          { name: 'Supino Inclinado 15–30°', sets: 3, reps: '6–8' },
-          { name: 'Crucifixo Inclinado Leve', sets: 2, reps: '10–12' },
+          { name: 'Supino Inclinado 15–30°',  search: 'Incline Bench Press Barbell', sets: 3, reps: '6-8'   },
+          { name: 'Crucifixo Inclinado Leve', search: 'Incline Dumbbell Fly',        sets: 2, reps: '10-12' },
         ]},
       ],
     },
@@ -29,14 +29,14 @@
       day: 'D2', name: 'Quad Sweep', color: '#22c55e',
       groups: [
         { name: 'Quadríceps', exercises: [
-          { name: 'Hack Squat', sets: 3, reps: '6–8' },
-          { name: 'Leg Press (pés baixos)', sets: 3, reps: '8–10' },
-          { name: 'Bulgarian Split Squat', sets: 2, reps: '8–10' },
-          { name: 'Extensora', sets: 3, reps: '12–15 (1 drop)' },
-          { name: 'Flexora', sets: 2, reps: '8–10' },
+          { name: 'Hack Squat',                search: 'Hack Squat',              sets: 3, reps: '6-8'   },
+          { name: 'Leg Press (pés baixos)',     search: 'Leg Press',               sets: 3, reps: '8-10'  },
+          { name: 'Bulgarian Split Squat',      search: 'Bulgarian Split Squat',   sets: 2, reps: '8-10'  },
+          { name: 'Extensora',                  search: 'Leg Extension',           sets: 3, reps: '12-15' },
+          { name: 'Flexora',                    search: 'Leg Curl',                sets: 2, reps: '8-10'  },
         ]},
         { name: 'Panturrilha', exercises: [
-          { name: 'Panturrilha', sets: 3, reps: '12–15' },
+          { name: 'Panturrilha', search: 'Calf Raise', sets: 3, reps: '12-15' },
         ]},
       ],
     },
@@ -44,18 +44,18 @@
       day: 'D3', name: 'Espessura + Ombro 3D', color: '#f59e0b',
       groups: [
         { name: 'Costas Espessura', exercises: [
-          { name: 'Remada Pesada', sets: 3, reps: '6–8' },
-          { name: 'Remada Unilateral', sets: 2, reps: '8–10' },
+          { name: 'Remada Pesada',     search: 'Bent Over Row Barbell', sets: 3, reps: '6-8'  },
+          { name: 'Remada Unilateral', search: 'Single Arm Row',        sets: 2, reps: '8-10' },
         ]},
         { name: 'Ombro', exercises: [
-          { name: 'Overhead Press', sets: 3, reps: '6–8' },
-          { name: 'Elevação Lateral Halter', sets: 3, reps: '12–15' },
-          { name: 'Crucifixo Invertido', sets: 3, reps: '12–15' },
+          { name: 'Overhead Press',        search: 'Overhead Press Barbell',  sets: 3, reps: '6-8'   },
+          { name: 'Elevação Lateral Halter', search: 'Lateral Raise Dumbbell', sets: 3, reps: '12-15' },
+          { name: 'Crucifixo Invertido',   search: 'Reverse Fly Dumbbell',    sets: 3, reps: '12-15' },
         ]},
         { name: 'Peito + Tríceps', exercises: [
-          { name: 'Supino Declinado / Convergente Baixo', sets: 3, reps: '6–8' },
-          { name: 'Crossover de Cima para Baixo', sets: 2, reps: '10–12' },
-          { name: 'Tríceps', sets: 2, reps: '8–10' },
+          { name: 'Supino Declinado / Convergente', search: 'Decline Bench Press Barbell', sets: 3, reps: '6-8'   },
+          { name: 'Crossover de Cima para Baixo',  search: 'Cable Fly High',               sets: 2, reps: '10-12' },
+          { name: 'Tríceps',                        search: 'Tricep Pushdown',              sets: 2, reps: '8-10'  },
         ]},
       ],
     },
@@ -63,55 +63,38 @@
       day: 'D4', name: 'Densidade Perna + Posterior', color: '#a855f7',
       groups: [
         { name: 'Perna', exercises: [
-          { name: 'Leg Press Pesado', sets: 3, reps: '6–8' },
-          { name: 'Hack Squat Controlado', sets: 2, reps: '8–10' },
+          { name: 'Leg Press Pesado',       search: 'Leg Press',    sets: 3, reps: '6-8'  },
+          { name: 'Hack Squat Controlado',  search: 'Hack Squat',   sets: 2, reps: '8-10' },
         ]},
         { name: 'Posterior', exercises: [
-          { name: 'Stiff / Romanian Deadlift', sets: 3, reps: '6–8' },
-          { name: 'Flexora', sets: 2, reps: '8–10' },
-          { name: 'Extensora', sets: 2, reps: '12–15' },
+          { name: 'Stiff / Romanian Deadlift', search: 'Romanian Deadlift', sets: 3, reps: '6-8'   },
+          { name: 'Flexora',                   search: 'Leg Curl',          sets: 2, reps: '8-10'  },
+          { name: 'Extensora',                 search: 'Leg Extension',     sets: 2, reps: '12-15' },
         ]},
         { name: 'Panturrilha', exercises: [
-          { name: 'Panturrilha', sets: 3, reps: '12–15' },
+          { name: 'Panturrilha', search: 'Calf Raise', sets: 3, reps: '12-15' },
         ]},
       ],
     },
   ];
 
-  const MEAL_LABELS = {
-    cafe: 'Café da manhã',
-    lanche_manha: 'Lanche manhã',
-    almoco: 'Almoço',
-    lanche_tarde: 'Lanche tarde',
-    jantar: 'Jantar',
-    ceia: 'Ceia',
-  };
-  const MEAL_ORDER = ['cafe', 'lanche_manha', 'almoco', 'lanche_tarde', 'jantar', 'ceia'];
-
   const SET_TYPES = [
     { value: 'normal',  label: 'Normal' },
-    { value: 'warmup',  label: 'Aquec.' },
-    { value: 'dropset', label: 'Drop'   },
-    { value: 'failure', label: 'Falha'  },
+    { value: 'warmup',  label: 'Aquec.'  },
+    { value: 'dropset', label: 'Drop'    },
+    { value: 'failure', label: 'Falha'   },
   ];
 
-  let workoutSession = null; // objeto com estado do treino ativo
+  // =====================================================================
+  // ESTADO
+  // =====================================================================
+  let workoutSession = null;
   let timerInterval = null;
-  let currentFoodData = null; // alimento selecionado para adicionar ao diário
-
-  // =====================================================================
-  // SUPABASE
-  // =====================================================================
-  const sb = window.supabase && window.SUPABASE_URL && window.SUPABASE_ANON_KEY
-    ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY)
-    : null;
 
   // =====================================================================
   // UTILS
   // =====================================================================
-  function uid() {
-    return Math.random().toString(36).slice(2) + Date.now().toString(36);
-  }
+  function uid() { return Math.random().toString(36).slice(2) + Date.now().toString(36); }
 
   function esc(s) {
     if (s == null) return '';
@@ -125,39 +108,25 @@
     return new Date(iso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
   }
 
-  function today() {
-    return new Date().toISOString().slice(0, 10);
-  }
-
   function toArr(val) {
     if (!val) return [];
     return Array.isArray(val) ? val : [val];
   }
 
-  function round1(n) {
-    return Math.round((n || 0) * 10) / 10;
+  function parseReps(repsStr) {
+    const m = String(repsStr).match(/(\d+)[–\-](\d+)/);
+    if (m) return { start: parseInt(m[1]), end: parseInt(m[2]) };
+    const s = String(repsStr).match(/(\d+)/);
+    if (s) return { start: parseInt(s[1]), end: parseInt(s[1]) };
+    return { start: 10, end: 10 };
   }
 
   // =====================================================================
-  // ABAS
-  // =====================================================================
-  document.querySelectorAll('.tab').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      const tab = this.getAttribute('data-tab');
-      document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-      this.classList.add('active');
-      const panel = document.getElementById(tab);
-      if (panel) panel.classList.add('active');
-    });
-  });
-
-  // =====================================================================
-  // HEVY API (via proxy Vercel)
+  // HEVY API (via proxy Vercel /api/hevy)
   // =====================================================================
   function hevyGet(path) {
     return fetch('/api/hevy?endpoint=' + encodeURIComponent(path))
-      .then(function (r) { return r.json(); });
+      .then(r => r.json());
   }
 
   function hevyPost(path, body) {
@@ -165,122 +134,123 @@
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
-    }).then(function (r) { return r.json(); });
+    }).then(r => r.json());
   }
 
   // =====================================================================
-  // CARREGAR TREINOS RECENTES
+  // CRIAR ROTINAS NO HEVY
   // =====================================================================
-  document.getElementById('refresh-workouts-btn').addEventListener('click', function () {
-    const el = document.getElementById('workouts-list');
-    el.innerHTML = '<p class="loading-msg">Carregando treinos…</p>';
-    hevyGet('/v1/workouts?page=1&pageSize=15')
-      .then(function (data) {
-        const workouts = toArr(data.workouts || data.data || data);
-        if (!workouts.length) { el.innerHTML = '<p class="empty">Nenhum treino encontrado.</p>'; return; }
-        el.innerHTML = workouts.slice(0, 15).map(function (w) {
-          const date = fmtDate(w.start_time);
-          const exs = toArr(w.exercises).slice(0, 4).map(e => e.title || '').filter(Boolean).join(', ');
-          return '<div class="workout-item"><h3>' + esc(w.title || 'Treino') + '</h3>' +
-            '<div class="meta">' + date + '</div>' +
-            (exs ? '<div class="ex-list">' + esc(exs) + '</div>' : '') +
-            '</div>';
-        }).join('');
-      })
-      .catch(function (err) {
-        el.innerHTML = '<p class="error-msg">Erro: ' + esc(err.message) + '</p>';
+  async function createRoutinesInHevy() {
+    const btn = document.getElementById('create-hevy-routines-btn');
+    const statusEl = document.getElementById('hevy-routines-status');
+
+    btn.disabled = true;
+    statusEl.className = 'hevy-routines-status info';
+    statusEl.textContent = 'Buscando exercícios no Hevy…';
+
+    // Coletar exercícios únicos por search term
+    const uniqueSearches = {};
+    MY_ROUTINE.forEach(day => {
+      day.groups.forEach(g => {
+        g.exercises.forEach(ex => {
+          if (!uniqueSearches[ex.search]) uniqueSearches[ex.search] = null;
+        });
       });
-  });
+    });
 
-  // =====================================================================
-  // CARREGAR ROTINAS
-  // =====================================================================
-  document.getElementById('refresh-routines-btn').addEventListener('click', function () {
-    const el = document.getElementById('routines-list');
-    el.innerHTML = '<p class="loading-msg">Carregando rotinas…</p>';
-    hevyGet('/v1/routines?page=1&pageSize=20')
-      .then(function (data) {
-        const routines = toArr(data.routines || data.data || data);
-        if (!routines.length) { el.innerHTML = '<p class="empty">Nenhuma rotina.</p>'; return; }
-        el.innerHTML = routines.map(function (r) {
-          const n = toArr(r.exercises).length;
-          return '<div class="routine-item"><h3>' + esc(r.title || 'Rotina') + '</h3>' +
-            '<div class="meta">' + n + ' exercício(s)</div></div>';
-        }).join('');
-      })
-      .catch(function (err) {
-        el.innerHTML = '<p class="error-msg">Erro: ' + esc(err.message) + '</p>';
+    // Buscar ID de cada exercício
+    const notFound = [];
+    const searchTerms = Object.keys(uniqueSearches);
+    for (let i = 0; i < searchTerms.length; i++) {
+      const term = searchTerms[i];
+      statusEl.textContent = `Buscando exercício ${i + 1}/${searchTerms.length}: ${term}…`;
+      try {
+        const data = await hevyGet('/v1/exercise_templates?page=1&pageSize=5&search_term=' + encodeURIComponent(term));
+        const items = toArr(data.exercise_templates || data.data || data);
+        if (items.length) {
+          uniqueSearches[term] = items[0].id;
+        } else {
+          notFound.push(term);
+        }
+      } catch (_) {
+        notFound.push(term);
+      }
+    }
+
+    // Construir mapa exercício por nome → template_id
+    const exIdMap = {};
+    MY_ROUTINE.forEach(day => {
+      day.groups.forEach(g => {
+        g.exercises.forEach(ex => {
+          exIdMap[ex.name] = uniqueSearches[ex.search] || null;
+        });
       });
+    });
+
+    // Criar as 4 rotinas no Hevy
+    const created = [];
+    const failed = [];
+    for (const day of MY_ROUTINE) {
+      statusEl.textContent = `Criando rotina ${day.day} – ${day.name}…`;
+      const exercises = [];
+      day.groups.forEach(g => {
+        g.exercises.forEach(ex => {
+          const tid = exIdMap[ex.name];
+          if (!tid) return; // pular se não encontrou
+          const repRange = parseReps(ex.reps);
+          exercises.push({
+            exercise_template_id: tid,
+            superset_id: null,
+            rest_seconds: 90,
+            notes: null,
+            sets: Array.from({ length: ex.sets }, () => ({
+              type: 'normal',
+              weight_kg: null,
+              reps: repRange.start,
+              rep_range: repRange,
+              distance_meters: null,
+              duration_seconds: null,
+            })),
+          });
+        });
+      });
+
+      if (!exercises.length) { failed.push(day.day); continue; }
+
+      try {
+        const res = await hevyPost('/v1/routines', {
+          routine: {
+            title: day.day + ' – ' + day.name,
+            folder_id: null,
+            notes: 'Criado pelo Protect Training',
+            exercises,
+          },
+        });
+        if (res.error) failed.push(day.day + ' (' + (res.error.message || res.error) + ')');
+        else created.push(day.day);
+      } catch (err) {
+        failed.push(day.day);
+      }
+    }
+
+    // Resultado final
+    btn.disabled = false;
+    let msg = '';
+    if (created.length) msg += '✓ Rotinas criadas: ' + created.join(', ') + '. ';
+    if (failed.length)  msg += '✗ Falha: ' + failed.join(', ') + '. ';
+    if (notFound.length) msg += 'Exercícios não encontrados: ' + notFound.join(', ') + '.';
+
+    statusEl.className = 'hevy-routines-status ' + (failed.length ? 'warn' : 'ok');
+    statusEl.textContent = msg || 'Concluído.';
+
+    // Recarregar lista de rotinas
+    if (created.length) document.getElementById('refresh-routines-btn').click();
+  }
+
+  document.getElementById('create-hevy-routines-btn').addEventListener('click', function () {
+    if (!confirm('Criar as 4 rotinas (D1, D2, D3, D4) direto no seu Hevy? Isso vai adicionar novas rotinas à sua conta.')) return;
+    createRoutinesInHevy();
   });
-
-  // =====================================================================
-  // SESSÃO DE TREINO
-  // =====================================================================
-  function saveSession() {
-    if (workoutSession) {
-      localStorage.setItem(WORKOUT_STORAGE_KEY, JSON.stringify(workoutSession));
-    } else {
-      localStorage.removeItem(WORKOUT_STORAGE_KEY);
-    }
-  }
-
-  function loadSession() {
-    try {
-      const raw = localStorage.getItem(WORKOUT_STORAGE_KEY);
-      if (raw) workoutSession = JSON.parse(raw);
-    } catch (_) { workoutSession = null; }
-  }
-
-  function startWorkout() {
-    const now = new Date();
-    const label = now.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit' }) +
-      ' ' + now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    workoutSession = {
-      title: 'Treino ' + label,
-      startTime: now.toISOString(),
-      exercises: [],
-    };
-    saveSession();
-    showWorkoutPanel();
-    startTimer();
-  }
-
-  function showWorkoutPanel() {
-    document.getElementById('start-workout-card').classList.add('hidden');
-    document.getElementById('active-workout-panel').classList.remove('hidden');
-    document.getElementById('workout-title-input').value = workoutSession.title;
-    renderExercises();
-    if (workoutSession.routineDayIdx != null) {
-      renderRoutineReference(workoutSession.routineDayIdx);
-    }
-  }
-
-  function hideWorkoutPanel() {
-    document.getElementById('active-workout-panel').classList.add('hidden');
-    document.getElementById('start-workout-card').classList.remove('hidden');
-    document.getElementById('routine-ref-panel').classList.add('hidden');
-    stopTimer();
-  }
-
-  function startTimer() {
-    const timerEl = document.getElementById('workout-timer');
-    function tick() {
-      if (!workoutSession) return;
-      const elapsed = Math.floor((Date.now() - new Date(workoutSession.startTime)) / 1000);
-      const h = Math.floor(elapsed / 3600);
-      const m = Math.floor((elapsed % 3600) / 60);
-      const s = elapsed % 60;
-      timerEl.textContent = (h > 0 ? String(h).padStart(2,'0') + ':' : '') +
-        String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-    }
-    tick();
-    timerInterval = setInterval(tick, 1000);
-  }
-
-  function stopTimer() {
-    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-    document.getElementById('workout-timer').textContent = '00:00';
-  }
 
   // =====================================================================
   // RENDERIZAR GRADE DE ROTINA
@@ -288,14 +258,15 @@
   function renderRoutineDays() {
     const grid = document.getElementById('routine-days-grid');
     grid.innerHTML = MY_ROUTINE.map(function (day, idx) {
-      const totalEx = day.groups.reduce(function (n, g) { return n + g.exercises.length; }, 0);
-      const exList = day.groups.map(function (g) {
-        return '<div class="rday-group-name">' + esc(g.name) + '</div>' +
-          g.exercises.map(function (ex) {
-            return '<div class="rday-ex"><span class="rday-ex-name">' + esc(ex.name) + '</span>' +
-              '<span class="rday-ex-sets">' + ex.sets + 'x ' + esc(ex.reps) + '</span></div>';
-          }).join('');
-      }).join('');
+      const totalEx = day.groups.reduce((n, g) => n + g.exercises.length, 0);
+      const exList = day.groups.map(g =>
+        '<div class="rday-group-name">' + esc(g.name) + '</div>' +
+        g.exercises.map(ex =>
+          '<div class="rday-ex"><span class="rday-ex-name">' + esc(ex.name) + '</span>' +
+          '<span class="rday-ex-sets">' + ex.sets + 'x ' + esc(ex.reps) + '</span></div>'
+        ).join('')
+      ).join('');
+
       return '<div class="rday-card" style="--day-color:' + day.color + '">' +
         '<div class="rday-header">' +
           '<span class="rday-badge">' + esc(day.day) + '</span>' +
@@ -310,7 +281,7 @@
         '</div>';
     }).join('');
 
-    grid.querySelectorAll('.rday-toggle-btn').forEach(function (btn) {
+    grid.querySelectorAll('.rday-toggle-btn').forEach(btn => {
       btn.addEventListener('click', function () {
         const card = this.closest('.rday-card');
         const list = card.querySelector('.rday-exercises');
@@ -320,20 +291,18 @@
       });
     });
 
-    grid.querySelectorAll('.rday-start-btn').forEach(function (btn) {
+    grid.querySelectorAll('.rday-start-btn').forEach(btn => {
       btn.addEventListener('click', function () {
-        const idx = parseInt(this.getAttribute('data-idx'));
-        startWorkoutFromRoutine(idx);
+        startWorkoutFromRoutine(parseInt(this.getAttribute('data-idx')));
       });
     });
   }
 
   function startWorkoutFromRoutine(dayIdx) {
     const day = MY_ROUTINE[dayIdx];
-    const now = new Date();
     workoutSession = {
       title: day.day + ' – ' + day.name,
-      startTime: now.toISOString(),
+      startTime: new Date().toISOString(),
       exercises: [],
       routineDayIdx: dayIdx,
     };
@@ -349,13 +318,106 @@
     if (dayIdx == null) { panel.classList.add('hidden'); return; }
     const day = MY_ROUTINE[dayIdx];
     panel.classList.remove('hidden');
-    list.innerHTML = day.groups.map(function (g) {
-      return '<div class="rref-group"><div class="rref-group-name">' + esc(g.name) + '</div>' +
-        g.exercises.map(function (ex) {
-          return '<div class="rref-ex"><span>' + esc(ex.name) + '</span>' +
-            '<span class="rref-sets">' + ex.sets + 'x ' + esc(ex.reps) + '</span></div>';
-        }).join('') + '</div>';
-    }).join('');
+    list.innerHTML = day.groups.map(g =>
+      '<div class="rref-group"><div class="rref-group-name">' + esc(g.name) + '</div>' +
+      g.exercises.map(ex =>
+        '<div class="rref-ex"><span>' + esc(ex.name) + '</span>' +
+        '<span class="rref-sets">' + ex.sets + 'x ' + esc(ex.reps) + '</span></div>'
+      ).join('') + '</div>'
+    ).join('');
+  }
+
+  // =====================================================================
+  // TREINOS RECENTES
+  // =====================================================================
+  document.getElementById('refresh-workouts-btn').addEventListener('click', function () {
+    const el = document.getElementById('workouts-list');
+    el.innerHTML = '<p class="loading-msg">Carregando treinos…</p>';
+    hevyGet('/v1/workouts?page=1&pageSize=15').then(data => {
+      const workouts = toArr(data.workouts || data.data || data);
+      if (!workouts.length) { el.innerHTML = '<p class="empty">Nenhum treino encontrado.</p>'; return; }
+      el.innerHTML = workouts.slice(0, 15).map(w => {
+        const exs = toArr(w.exercises).slice(0, 4).map(e => e.title || '').filter(Boolean).join(', ');
+        return '<div class="workout-item"><h3>' + esc(w.title || 'Treino') + '</h3>' +
+          '<div class="meta">' + fmtDate(w.start_time) + '</div>' +
+          (exs ? '<div class="ex-list">' + esc(exs) + '</div>' : '') + '</div>';
+      }).join('');
+    }).catch(err => { el.innerHTML = '<p class="error-msg">Erro: ' + esc(err.message) + '</p>'; });
+  });
+
+  // =====================================================================
+  // ROTINAS DO HEVY
+  // =====================================================================
+  document.getElementById('refresh-routines-btn').addEventListener('click', function () {
+    const el = document.getElementById('routines-list');
+    el.innerHTML = '<p class="loading-msg">Carregando rotinas…</p>';
+    hevyGet('/v1/routines?page=1&pageSize=30').then(data => {
+      const routines = toArr(data.routines || data.data || data);
+      if (!routines.length) { el.innerHTML = '<p class="empty">Nenhuma rotina encontrada.</p>'; return; }
+      el.innerHTML = routines.map(r => {
+        const n = toArr(r.exercises).length;
+        return '<div class="routine-item"><h3>' + esc(r.title || 'Rotina') + '</h3>' +
+          '<div class="meta">' + n + ' exercício(s)</div></div>';
+      }).join('');
+    }).catch(err => { el.innerHTML = '<p class="error-msg">Erro: ' + esc(err.message) + '</p>'; });
+  });
+
+  // =====================================================================
+  // SESSÃO DE TREINO
+  // =====================================================================
+  function saveSession() {
+    if (workoutSession) localStorage.setItem(WORKOUT_STORAGE_KEY, JSON.stringify(workoutSession));
+    else localStorage.removeItem(WORKOUT_STORAGE_KEY);
+  }
+
+  function loadSession() {
+    try {
+      const raw = localStorage.getItem(WORKOUT_STORAGE_KEY);
+      if (raw) workoutSession = JSON.parse(raw);
+    } catch (_) { workoutSession = null; }
+  }
+
+  function startWorkout() {
+    const now = new Date();
+    const label = now.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit' }) +
+      ' ' + now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    workoutSession = { title: 'Treino ' + label, startTime: now.toISOString(), exercises: [] };
+    saveSession();
+    showWorkoutPanel();
+    startTimer();
+  }
+
+  function showWorkoutPanel() {
+    document.getElementById('start-workout-card').classList.add('hidden');
+    document.getElementById('active-workout-panel').classList.remove('hidden');
+    document.getElementById('workout-title-input').value = workoutSession.title;
+    renderExercises();
+    if (workoutSession.routineDayIdx != null) renderRoutineReference(workoutSession.routineDayIdx);
+  }
+
+  function hideWorkoutPanel() {
+    document.getElementById('active-workout-panel').classList.add('hidden');
+    document.getElementById('start-workout-card').classList.remove('hidden');
+    document.getElementById('routine-ref-panel').classList.add('hidden');
+    stopTimer();
+  }
+
+  function startTimer() {
+    const el = document.getElementById('workout-timer');
+    function tick() {
+      if (!workoutSession) return;
+      const sec = Math.floor((Date.now() - new Date(workoutSession.startTime)) / 1000);
+      const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+      el.textContent = (h ? String(h).padStart(2, '0') + ':' : '') +
+        String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+    }
+    tick();
+    timerInterval = setInterval(tick, 1000);
+  }
+
+  function stopTimer() {
+    if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+    document.getElementById('workout-timer').textContent = '00:00';
   }
 
   document.getElementById('start-workout-btn').addEventListener('click', startWorkout);
@@ -371,193 +433,126 @@
     hideWorkoutPanel();
   });
 
-  document.getElementById('finish-workout-btn').addEventListener('click', finishWorkout);
-
-  function finishWorkout() {
+  document.getElementById('finish-workout-btn').addEventListener('click', function () {
     if (!workoutSession) return;
-    const completedSets = workoutSession.exercises.flatMap(e =>
-      e.sets.filter(s => s.completed)
-    );
-    if (!completedSets.length) {
-      alert('Complete pelo menos uma série antes de finalizar.');
-      return;
-    }
+    const completed = workoutSession.exercises.flatMap(e => e.sets.filter(s => s.completed));
+    if (!completed.length) { alert('Complete pelo menos uma série antes de finalizar.'); return; }
 
-    const btn = document.getElementById('finish-workout-btn');
+    const btn = this;
     btn.disabled = true;
     btn.textContent = 'Salvando…';
 
-    const endTime = new Date().toISOString();
-    const payload = {
+    hevyPost('/v1/workouts', {
       workout: {
         title: workoutSession.title || 'Treino',
         description: null,
         start_time: workoutSession.startTime,
-        end_time: endTime,
+        end_time: new Date().toISOString(),
         is_private: false,
-        exercises: workoutSession.exercises.map(function (ex, idx) {
-          return {
-            exercise_template_id: ex.template_id,
-            superset_id: null,
-            notes: ex.notes || '',
-            sets: ex.sets.filter(s => s.completed).map(function (s) {
-              return {
-                type: s.type,
-                weight_kg: s.weight_kg ? parseFloat(s.weight_kg) : null,
-                reps: s.reps ? parseInt(s.reps) : null,
-                distance_meters: null,
-                duration_seconds: null,
-                rpe: null,
-              };
-            }),
-          };
-        }),
+        exercises: workoutSession.exercises.map(ex => ({
+          exercise_template_id: ex.template_id,
+          superset_id: null,
+          notes: ex.notes || null,
+          sets: ex.sets.filter(s => s.completed).map(s => ({
+            type: s.type,
+            weight_kg: s.weight_kg ? parseFloat(s.weight_kg) : null,
+            reps: s.reps ? parseInt(s.reps) : null,
+            distance_meters: null, duration_seconds: null, rpe: null,
+          })),
+        })),
       },
-    };
-
-    hevyPost('/v1/workouts', payload)
-      .then(function (res) {
-        if (res.error) throw new Error(res.error);
-        workoutSession = null;
-        saveSession();
-        hideWorkoutPanel();
-        alert('Treino salvo no Hevy!');
-        document.getElementById('refresh-workouts-btn').click();
-      })
-      .catch(function (err) {
-        alert('Erro ao salvar: ' + err.message);
-        btn.disabled = false;
-        btn.textContent = 'Finalizar treino';
-      });
-  }
+    }).then(res => {
+      if (res.error) throw new Error(res.error.message || JSON.stringify(res.error));
+      workoutSession = null;
+      saveSession();
+      hideWorkoutPanel();
+      alert('Treino salvo no Hevy!');
+      document.getElementById('refresh-workouts-btn').click();
+    }).catch(err => {
+      alert('Erro ao salvar: ' + err.message);
+      btn.disabled = false;
+      btn.textContent = 'Finalizar treino';
+    });
+  });
 
   // =====================================================================
-  // RENDERIZAÇÃO DO TREINO ATIVO
+  // RENDERIZAR EXERCÍCIOS DO TREINO ATIVO
   // =====================================================================
   function renderExercises() {
     const container = document.getElementById('workout-exercises-list');
-    if (!workoutSession || !workoutSession.exercises.length) {
-      container.innerHTML = '';
-      return;
-    }
-    container.innerHTML = workoutSession.exercises.map(function (ex) {
-      return renderExerciseCard(ex);
+    if (!workoutSession || !workoutSession.exercises.length) { container.innerHTML = ''; return; }
+    container.innerHTML = workoutSession.exercises.map(ex => {
+      const setsRows = ex.sets.map((s, idx) => {
+        const opts = SET_TYPES.map(t =>
+          '<option value="' + t.value + '"' + (s.type === t.value ? ' selected' : '') + '>' + t.label + '</option>'
+        ).join('');
+        return '<tr class="' + (s.completed ? 'set-completed' : '') + '" data-set-id="' + s.id + '">' +
+          '<td><span class="set-num">' + (idx + 1) + '</span></td>' +
+          '<td><select class="set-type-select" data-field="type">' + opts + '</select></td>' +
+          '<td><input type="number" class="set-input" data-field="weight_kg" placeholder="kg" min="0" step="0.5" value="' + (s.weight_kg || '') + '"></td>' +
+          '<td><input type="number" class="set-input" data-field="reps" placeholder="reps" min="0" step="1" value="' + (s.reps || '') + '"></td>' +
+          '<td><button type="button" class="set-complete-btn' + (s.completed ? ' done' : '') + '">&#x2713;</button></td>' +
+          '<td><button type="button" class="set-delete-btn">&#x2715;</button></td>' +
+          '</tr>';
+      }).join('');
+      return '<div class="exercise-card" data-ex-id="' + ex.id + '">' +
+        '<div class="exercise-card-header">' +
+          '<span class="ex-name">' + esc(ex.title) + '</span>' +
+          (ex.muscle ? '<span class="ex-muscle">' + esc(ex.muscle) + '</span>' : '') +
+          '<button type="button" class="ex-delete">&#x2715;</button>' +
+        '</div>' +
+        '<div class="exercise-notes"><textarea class="ex-notes" rows="1" placeholder="Notas">' + esc(ex.notes || '') + '</textarea></div>' +
+        '<table class="sets-table"><thead><tr><th>#</th><th>Tipo</th><th>Kg</th><th>Reps</th><th></th><th></th></tr></thead>' +
+        '<tbody>' + setsRows + '</tbody></table>' +
+        '<div class="add-set-row"><button type="button" class="add-set-btn">+ Série</button></div>' +
+        '</div>';
     }).join('');
-    bindExerciseEvents(container);
-  }
 
-  function renderExerciseCard(ex) {
-    const setsRows = ex.sets.map(function (s, idx) {
-      const typeOptions = SET_TYPES.map(t =>
-        '<option value="' + t.value + '"' + (s.type === t.value ? ' selected' : '') + '>' + t.label + '</option>'
-      ).join('');
-      const doneClass = s.completed ? ' done' : '';
-      const rowClass = s.completed ? ' set-completed' : '';
-      return '<tr class="' + rowClass + '" data-set-id="' + s.id + '">' +
-        '<td><span class="set-num">' + (idx + 1) + '</span></td>' +
-        '<td><select class="set-type-select" data-field="type">' + typeOptions + '</select></td>' +
-        '<td><input type="number" class="set-input set-weight" data-field="weight_kg" placeholder="kg" min="0" step="0.5" value="' + (s.weight_kg || '') + '"></td>' +
-        '<td><input type="number" class="set-input set-reps" data-field="reps" placeholder="reps" min="0" step="1" value="' + (s.reps || '') + '"></td>' +
-        '<td><button type="button" class="set-complete-btn' + doneClass + '" title="Marcar">&#x2713;</button></td>' +
-        '<td><button type="button" class="set-delete-btn" title="Remover">&#x2715;</button></td>' +
-        '</tr>';
-    }).join('');
-
-    return '<div class="exercise-card" data-ex-id="' + ex.id + '">' +
-      '<div class="exercise-card-header">' +
-        '<span class="ex-name">' + esc(ex.title) + '</span>' +
-        (ex.muscle ? '<span class="ex-muscle">' + esc(ex.muscle) + '</span>' : '') +
-        '<button type="button" class="ex-delete" title="Remover exercício">&#x2715;</button>' +
-      '</div>' +
-      '<div class="exercise-notes"><textarea class="ex-notes" rows="1" placeholder="Notas (opcional)">' + esc(ex.notes || '') + '</textarea></div>' +
-      '<table class="sets-table">' +
-        '<thead><tr><th>#</th><th>Tipo</th><th>Kg</th><th>Reps</th><th></th><th></th></tr></thead>' +
-        '<tbody>' + setsRows + '</tbody>' +
-      '</table>' +
-      '<div class="add-set-row"><button type="button" class="add-set-btn">+ Série</button></div>' +
-      '</div>';
-  }
-
-  function bindExerciseEvents(container) {
-    // Remover exercício
-    container.querySelectorAll('.ex-delete').forEach(function (btn) {
+    // Eventos
+    container.querySelectorAll('.ex-delete').forEach(btn => {
       btn.addEventListener('click', function () {
-        const card = this.closest('.exercise-card');
-        const exId = card.getAttribute('data-ex-id');
-        workoutSession.exercises = workoutSession.exercises.filter(e => e.id !== exId);
-        saveSession();
-        renderExercises();
+        const id = this.closest('.exercise-card').getAttribute('data-ex-id');
+        workoutSession.exercises = workoutSession.exercises.filter(e => e.id !== id);
+        saveSession(); renderExercises();
       });
     });
-
-    // Notas do exercício
-    container.querySelectorAll('.ex-notes').forEach(function (ta) {
+    container.querySelectorAll('.ex-notes').forEach(ta => {
       ta.addEventListener('input', function () {
-        const card = this.closest('.exercise-card');
-        const exId = card.getAttribute('data-ex-id');
-        const ex = workoutSession.exercises.find(e => e.id === exId);
+        const id = this.closest('.exercise-card').getAttribute('data-ex-id');
+        const ex = workoutSession.exercises.find(e => e.id === id);
         if (ex) { ex.notes = this.value; saveSession(); }
       });
     });
-
-    // Adicionar série
-    container.querySelectorAll('.add-set-btn').forEach(function (btn) {
+    container.querySelectorAll('.add-set-btn').forEach(btn => {
       btn.addEventListener('click', function () {
-        const card = this.closest('.exercise-card');
-        const exId = card.getAttribute('data-ex-id');
-        const ex = workoutSession.exercises.find(e => e.id === exId);
-        if (ex) {
-          ex.sets.push({ id: uid(), type: 'normal', weight_kg: '', reps: '', completed: false });
-          saveSession();
-          renderExercises();
-        }
+        const id = this.closest('.exercise-card').getAttribute('data-ex-id');
+        const ex = workoutSession.exercises.find(e => e.id === id);
+        if (ex) { ex.sets.push({ id: uid(), type: 'normal', weight_kg: '', reps: '', completed: false }); saveSession(); renderExercises(); }
       });
     });
-
-    // Remover série
-    container.querySelectorAll('.set-delete-btn').forEach(function (btn) {
+    container.querySelectorAll('.set-delete-btn').forEach(btn => {
       btn.addEventListener('click', function () {
-        const row = this.closest('tr');
-        const card = this.closest('.exercise-card');
-        const exId = card.getAttribute('data-ex-id');
-        const setId = row.getAttribute('data-set-id');
+        const setId = this.closest('tr').getAttribute('data-set-id');
+        const exId = this.closest('.exercise-card').getAttribute('data-ex-id');
         const ex = workoutSession.exercises.find(e => e.id === exId);
-        if (ex) {
-          ex.sets = ex.sets.filter(s => s.id !== setId);
-          saveSession();
-          renderExercises();
-        }
+        if (ex) { ex.sets = ex.sets.filter(s => s.id !== setId); saveSession(); renderExercises(); }
       });
     });
-
-    // Marcar série como completa
-    container.querySelectorAll('.set-complete-btn').forEach(function (btn) {
+    container.querySelectorAll('.set-complete-btn').forEach(btn => {
       btn.addEventListener('click', function () {
-        const row = this.closest('tr');
-        const card = this.closest('.exercise-card');
-        const exId = card.getAttribute('data-ex-id');
-        const setId = row.getAttribute('data-set-id');
+        const setId = this.closest('tr').getAttribute('data-set-id');
+        const exId = this.closest('.exercise-card').getAttribute('data-ex-id');
         const ex = workoutSession.exercises.find(e => e.id === exId);
-        if (ex) {
-          const s = ex.sets.find(s => s.id === setId);
-          if (s) { s.completed = !s.completed; saveSession(); renderExercises(); }
-        }
+        if (ex) { const s = ex.sets.find(s => s.id === setId); if (s) { s.completed = !s.completed; saveSession(); renderExercises(); } }
       });
     });
-
-    // Atualizar campos das séries (sem re-renderizar)
-    container.querySelectorAll('.set-type-select, .set-input').forEach(function (input) {
+    container.querySelectorAll('.set-type-select, .set-input').forEach(input => {
       input.addEventListener('change', function () {
-        const row = this.closest('tr');
-        const card = this.closest('.exercise-card');
-        const exId = card.getAttribute('data-ex-id');
-        const setId = row.getAttribute('data-set-id');
+        const setId = this.closest('tr').getAttribute('data-set-id');
+        const exId = this.closest('.exercise-card').getAttribute('data-ex-id');
         const field = this.getAttribute('data-field');
         const ex = workoutSession.exercises.find(e => e.id === exId);
-        if (ex) {
-          const s = ex.sets.find(s => s.id === setId);
-          if (s) { s[field] = this.value; saveSession(); }
-        }
+        if (ex) { const s = ex.sets.find(s => s.id === setId); if (s) { s[field] = this.value; saveSession(); } }
       });
     });
   }
@@ -580,49 +575,40 @@
     if (e.target === this) this.classList.add('hidden');
   });
 
-  let exSearchTimer = null;
+  let exTimer = null;
   document.getElementById('exercise-search-input').addEventListener('input', function () {
-    clearTimeout(exSearchTimer);
+    clearTimeout(exTimer);
     const q = this.value.trim();
     if (!q) { document.getElementById('exercise-results').innerHTML = ''; return; }
-    exSearchTimer = setTimeout(() => searchExercises(q), 350);
+    exTimer = setTimeout(() => searchExercises(q), 350);
   });
 
   function searchExercises(q) {
     const el = document.getElementById('exercise-results');
     el.innerHTML = '<p class="loading-msg">Buscando…</p>';
     hevyGet('/v1/exercise_templates?page=1&pageSize=20&search_term=' + encodeURIComponent(q))
-      .then(function (data) {
+      .then(data => {
         const items = toArr(data.exercise_templates || data.data || data);
         if (!items.length) { el.innerHTML = '<p class="empty">Nenhum exercício encontrado.</p>'; return; }
-        el.innerHTML = items.map(function (ex) {
-          return '<div class="exercise-result-item" data-id="' + esc(ex.id) + '" data-title="' + esc(ex.title) + '" data-muscle="' + esc(ex.primary_muscle_group || '') + '">' +
-            '<span class="er-name">' + esc(ex.title) + '</span>' +
-            (ex.primary_muscle_group ? '<span class="er-muscle">' + esc(ex.primary_muscle_group) + '</span>' : '') +
-            '<button type="button" class="er-add">+ Add</button>' +
-            '</div>';
-        }).join('');
-        el.querySelectorAll('.exercise-result-item').forEach(function (item) {
+        el.innerHTML = items.map(ex =>
+          '<div class="exercise-result-item" data-id="' + esc(ex.id) + '" data-title="' + esc(ex.title) + '" data-muscle="' + esc(ex.primary_muscle_group || '') + '">' +
+          '<span class="er-name">' + esc(ex.title) + '</span>' +
+          (ex.primary_muscle_group ? '<span class="er-muscle">' + esc(ex.primary_muscle_group) + '</span>' : '') +
+          '<button type="button" class="er-add">+ Add</button></div>'
+        ).join('');
+        el.querySelectorAll('.exercise-result-item').forEach(item => {
           item.addEventListener('click', function () {
-            addExerciseToWorkout(
-              this.getAttribute('data-id'),
-              this.getAttribute('data-title'),
-              this.getAttribute('data-muscle')
-            );
+            addExerciseToWorkout(this.getAttribute('data-id'), this.getAttribute('data-title'), this.getAttribute('data-muscle'));
           });
         });
       })
-      .catch(function () { el.innerHTML = '<p class="error-msg">Erro ao buscar exercícios.</p>'; });
+      .catch(() => { el.innerHTML = '<p class="error-msg">Erro ao buscar exercícios.</p>'; });
   }
 
   function addExerciseToWorkout(templateId, title, muscle) {
     if (!workoutSession) return;
     workoutSession.exercises.push({
-      id: uid(),
-      template_id: templateId,
-      title: title,
-      muscle: muscle,
-      notes: '',
+      id: uid(), template_id: templateId, title, muscle, notes: '',
       sets: [{ id: uid(), type: 'normal', weight_kg: '', reps: '', completed: false }],
     });
     saveSession();
@@ -631,260 +617,14 @@
   }
 
   // =====================================================================
-  // FATSECRET — BUSCA DE ALIMENTOS
-  // =====================================================================
-  function fsSearch(method, params) {
-    return fetch('/api/fatsecret', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ method, ...params }),
-    }).then(r => r.json());
-  }
-
-  function doFoodSearch() {
-    const q = document.getElementById('food-search-input').value.trim();
-    if (!q) return;
-    const el = document.getElementById('food-results');
-    el.innerHTML = '<p class="loading-msg">Buscando alimentos…</p>';
-    fsSearch('foods.search', { search_expression: q, max_results: '10', page_number: '0' })
-      .then(function (data) {
-        if (data.error) {
-          const msg = typeof data.error === 'string' ? data.error
-            : (data.error.message || JSON.stringify(data.error));
-          // Código 204 = nenhum resultado encontrado
-          if ((data.error.code === '204') || msg.toLowerCase().includes('no foods found')) {
-            throw new Error('Nenhum alimento encontrado para "' + q + '".');
-          }
-          throw new Error(msg);
-        }
-        const foods = toArr((data.foods || {}).food);
-        if (!foods.length) { el.innerHTML = '<p class="empty">Nenhum alimento encontrado.</p>'; return; }
-        el.innerHTML = foods.map(function (food) {
-          const servings = toArr((food.servings || {}).serving);
-          const s = servings[0] || {};
-          const kcal = s.calories ? Math.round(s.calories) + ' kcal' : '';
-          const desc = s.serving_description || '';
-          const macros = [
-            s.protein ? 'P:' + round1(s.protein) + 'g' : '',
-            s.carbohydrate ? 'C:' + round1(s.carbohydrate) + 'g' : '',
-            s.fat ? 'G:' + round1(s.fat) + 'g' : '',
-          ].filter(Boolean).join(' · ');
-          return '<div class="food-card">' +
-            '<div class="food-card-info">' +
-              '<div class="food-card-name" title="' + esc(food.food_name) + '">' + esc(food.food_name) + '</div>' +
-              '<div class="food-card-sub">' + esc(desc) + (macros ? ' · ' + macros : '') + '</div>' +
-            '</div>' +
-            '<span class="food-card-kcal">' + kcal + '</span>' +
-            '<button type="button" class="food-add-btn" title="Adicionar ao diário" data-food=\'' + escFoodAttr(food) + '\'>+</button>' +
-            '</div>';
-        }).join('');
-        el.querySelectorAll('.food-add-btn').forEach(function (btn) {
-          btn.addEventListener('click', function () {
-            try {
-              const food = JSON.parse(this.getAttribute('data-food'));
-              openAddFoodModal(food);
-            } catch (_) {}
-          });
-        });
-      })
-      .catch(function (err) {
-        el.innerHTML = '<p class="error-msg">Erro: ' + esc(err.message) + '</p>';
-      });
-  }
-
-  function escFoodAttr(food) {
-    return JSON.stringify(food).replace(/'/g, '&#39;').replace(/"/g, '&quot;');
-  }
-
-  document.getElementById('food-search-btn').addEventListener('click', doFoodSearch);
-  document.getElementById('food-search-input').addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') doFoodSearch();
-  });
-
-  // =====================================================================
-  // MODAL: ADICIONAR ALIMENTO AO DIÁRIO
-  // =====================================================================
-  function openAddFoodModal(food) {
-    currentFoodData = food;
-    document.getElementById('add-food-modal-title').textContent = food.food_name || 'Adicionar ao diário';
-
-    // Preencher select de porções
-    const servings = toArr((food.servings || {}).serving);
-    const servSelect = document.getElementById('add-food-serving-select');
-    servSelect.innerHTML = servings.map(function (s, i) {
-      return '<option value="' + i + '">' + esc(s.serving_description || 'Porção ' + (i + 1)) + '</option>';
-    }).join('');
-
-    document.getElementById('add-food-qty-input').value = '1';
-    updateNutritionPreview();
-    document.getElementById('add-food-modal').classList.remove('hidden');
-  }
-
-  function updateNutritionPreview() {
-    if (!currentFoodData) return;
-    const servings = toArr((currentFoodData.servings || {}).serving);
-    const idx = parseInt(document.getElementById('add-food-serving-select').value) || 0;
-    const s = servings[idx] || {};
-    const qty = parseFloat(document.getElementById('add-food-qty-input').value) || 1;
-    const kcal = round1((parseFloat(s.calories) || 0) * qty);
-    const prot = round1((parseFloat(s.protein) || 0) * qty);
-    const carb = round1((parseFloat(s.carbohydrate) || 0) * qty);
-    const fat  = round1((parseFloat(s.fat) || 0) * qty);
-    document.getElementById('add-food-nutrition-preview').innerHTML =
-      '<div class="np-item"><span class="np-value">' + kcal + '</span><span class="np-label">kcal</span></div>' +
-      '<div class="np-item"><span class="np-value">' + prot + 'g</span><span class="np-label">proteína</span></div>' +
-      '<div class="np-item"><span class="np-value">' + carb + 'g</span><span class="np-label">carbs</span></div>' +
-      '<div class="np-item"><span class="np-value">' + fat + 'g</span><span class="np-label">gordura</span></div>';
-  }
-
-  document.getElementById('add-food-serving-select').addEventListener('change', updateNutritionPreview);
-  document.getElementById('add-food-qty-input').addEventListener('input', updateNutritionPreview);
-
-  document.getElementById('close-food-modal').addEventListener('click', function () {
-    document.getElementById('add-food-modal').classList.add('hidden');
-    currentFoodData = null;
-  });
-
-  document.getElementById('add-food-modal').addEventListener('click', function (e) {
-    if (e.target === this) { this.classList.add('hidden'); currentFoodData = null; }
-  });
-
-  document.getElementById('confirm-add-food-btn').addEventListener('click', function () {
-    if (!currentFoodData || !sb) { alert('Supabase não configurado.'); return; }
-    const servings = toArr((currentFoodData.servings || {}).serving);
-    const idx = parseInt(document.getElementById('add-food-serving-select').value) || 0;
-    const s = servings[idx] || {};
-    const qty = parseFloat(document.getElementById('add-food-qty-input').value) || 1;
-    const mealType = document.getElementById('add-food-meal-type').value;
-    const diaryDate = document.getElementById('diary-date-input').value || today();
-
-    const row = {
-      diary_date: diaryDate,
-      meal_type: mealType,
-      food_id: String(currentFoodData.food_id || ''),
-      food_name: currentFoodData.food_name || '',
-      serving_description: s.serving_description || '',
-      quantity: qty,
-      calories: round1((parseFloat(s.calories) || 0) * qty),
-      protein: round1((parseFloat(s.protein) || 0) * qty),
-      carbs: round1((parseFloat(s.carbohydrate) || 0) * qty),
-      fat: round1((parseFloat(s.fat) || 0) * qty),
-    };
-
-    const btn = document.getElementById('confirm-add-food-btn');
-    btn.disabled = true;
-    btn.textContent = 'Salvando…';
-
-    sb.from('food_diary').insert(row).then(function ({ error }) {
-      btn.disabled = false;
-      btn.textContent = 'Adicionar ao diário';
-      if (error) { alert('Erro: ' + error.message); return; }
-      document.getElementById('add-food-modal').classList.add('hidden');
-      currentFoodData = null;
-      loadDiary(diaryDate);
-    });
-  });
-
-  // =====================================================================
-  // DIÁRIO ALIMENTAR (SUPABASE)
-  // =====================================================================
-  function loadDiary(date) {
-    if (!sb) {
-      document.getElementById('diary-list').innerHTML = '<p class="error-msg">Supabase não configurado.</p>';
-      return;
-    }
-    const el = document.getElementById('diary-list');
-    el.innerHTML = '<p class="loading-msg">Carregando…</p>';
-    sb.from('food_diary').select('*').eq('diary_date', date).order('created_at').then(function ({ data, error }) {
-      if (error) { el.innerHTML = '<p class="error-msg">' + esc(error.message) + '</p>'; return; }
-      renderDiary(data || []);
-    });
-  }
-
-  function renderDiary(entries) {
-    const el = document.getElementById('diary-list');
-    const totalsEl = document.getElementById('macro-totals');
-    if (!entries.length) {
-      el.innerHTML = '<p class="empty">Nenhuma refeição registrada. Busque um alimento acima.</p>';
-      totalsEl.classList.add('hidden');
-      return;
-    }
-
-    // Totais
-    const totals = entries.reduce(function (acc, e) {
-      acc.kcal += e.calories || 0;
-      acc.prot += e.protein || 0;
-      acc.carbs += e.carbs || 0;
-      acc.fat += e.fat || 0;
-      return acc;
-    }, { kcal: 0, prot: 0, carbs: 0, fat: 0 });
-
-    document.getElementById('total-kcal').textContent = Math.round(totals.kcal);
-    document.getElementById('total-protein').textContent = round1(totals.prot) + 'g';
-    document.getElementById('total-carbs').textContent = round1(totals.carbs) + 'g';
-    document.getElementById('total-fat').textContent = round1(totals.fat) + 'g';
-    totalsEl.classList.remove('hidden');
-
-    // Agrupar por refeição
-    const grouped = {};
-    entries.forEach(function (e) {
-      if (!grouped[e.meal_type]) grouped[e.meal_type] = [];
-      grouped[e.meal_type].push(e);
-    });
-
-    el.innerHTML = MEAL_ORDER.filter(k => grouped[k]).map(function (mealKey) {
-      const items = grouped[mealKey];
-      const rows = items.map(function (e) {
-        const sub = (e.quantity !== 1 ? e.quantity + ' × ' : '') + (e.serving_description || '');
-        return '<div class="diary-entry" data-id="' + esc(e.id) + '">' +
-          '<div class="diary-entry-info">' +
-            '<div class="diary-entry-name" title="' + esc(e.food_name) + '">' + esc(e.food_name) + '</div>' +
-            (sub ? '<div class="diary-entry-sub">' + esc(sub) + '</div>' : '') +
-          '</div>' +
-          '<span class="diary-entry-kcal">' + Math.round(e.calories || 0) + ' kcal</span>' +
-          '<button type="button" class="diary-delete-btn" data-id="' + esc(e.id) + '">&#x2715;</button>' +
-          '</div>';
-      }).join('');
-      return '<div class="diary-meal-group">' +
-        '<div class="diary-meal-title">' + esc(MEAL_LABELS[mealKey] || mealKey) + '</div>' +
-        rows + '</div>';
-    }).join('');
-
-    el.querySelectorAll('.diary-delete-btn').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        const id = this.getAttribute('data-id');
-        if (!confirm('Remover esta entrada?')) return;
-        sb.from('food_diary').delete().eq('id', id).then(function ({ error }) {
-          if (error) alert('Erro: ' + error.message);
-          else loadDiary(document.getElementById('diary-date-input').value || today());
-        });
-      });
-    });
-  }
-
-  document.getElementById('diary-date-input').addEventListener('change', function () {
-    loadDiary(this.value || today());
-  });
-
-  // =====================================================================
   // INICIALIZAÇÃO
   // =====================================================================
-  // Definir data de hoje no input
-  const diaryInput = document.getElementById('diary-date-input');
-  diaryInput.value = today();
-  diaryInput.max = today();
-
-  // Renderizar grade de rotina
   renderRoutineDays();
 
-  // Restaurar sessão de treino se havia uma ativa
   loadSession();
   if (workoutSession) {
     showWorkoutPanel();
     startTimer();
   }
-
-  // Carregar diário do dia
-  if (sb) loadDiary(today());
 
 })();
