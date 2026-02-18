@@ -558,13 +558,115 @@
   }
 
   // =====================================================================
-  // MODAL: BUSCA DE EXERCÍCIO
+  // MODAL: BUSCA DE EXERCÍCIO (filtro client-side)
   // =====================================================================
+
+  // Tradução português → termos de busca em inglês
+  const PT_EN = [
+    ['pulldown aberto',       'lat pulldown'],
+    ['pulldown unilateral',   'lat pulldown'],
+    ['puxada',                'lat pulldown'],
+    ['remada',                'row'],
+    ['supino',                'bench press'],
+    ['crucifixo inclinado',   'incline dumbbell fly'],
+    ['crucifixo invertido',   'reverse fly'],
+    ['crucifixo',             'fly'],
+    ['elevação lateral',      'lateral raise'],
+    ['desenvolvimento',       'overhead press'],
+    ['overhead',              'overhead press'],
+    ['agachamento',           'squat'],
+    ['extensora',             'leg extension'],
+    ['flexora',               'leg curl'],
+    ['panturrilha',           'calf raise'],
+    ['stiff',                 'romanian deadlift'],
+    ['rosca',                 'curl'],
+    ['tríceps',               'tricep'],
+    ['triceps',               'tricep'],
+    ['hack squat',            'hack squat'],
+    ['leg press',             'leg press'],
+    ['bulgarian',             'bulgarian'],
+    ['straight arm',          'straight arm pulldown'],
+    ['crossover',             'cable fly'],
+    ['terra',                 'deadlift'],
+    ['bíceps',                'bicep'],
+    ['biceps',                'bicep'],
+    ['peito',                 'chest'],
+    ['costas',                'back'],
+    ['ombro',                 'shoulder'],
+  ];
+
+  function ptToEn(q) {
+    const lower = q.toLowerCase();
+    for (const [pt, en] of PT_EN) {
+      if (lower.includes(pt)) return en;
+    }
+    return lower;
+  }
+
+  // Cache de todos os exercícios (carregado uma vez)
+  let allExercises = null;
+  let loadingExercises = false;
+
+  async function loadAllExercises(onProgress) {
+    if (allExercises) return allExercises;
+    if (loadingExercises) return null; // já carregando
+    loadingExercises = true;
+    allExercises = [];
+    let page = 1;
+    while (true) {
+      onProgress && onProgress(allExercises.length);
+      const data = await hevyGet('/v1/exercise_templates?page=' + page + '&pageSize=100');
+      const items = toArr(data.exercise_templates || data.data || data);
+      if (!items.length) break;
+      allExercises = allExercises.concat(items);
+      if (items.length < 100) break; // última página
+      page++;
+      if (page > 15) break; // limite de segurança: 1500 exercícios
+    }
+    loadingExercises = false;
+    return allExercises;
+  }
+
+  function filterExercises(q) {
+    if (!allExercises) return [];
+    const term = ptToEn(q).toLowerCase();
+    const original = q.toLowerCase();
+    return allExercises.filter(ex => {
+      const title = (ex.title || '').toLowerCase();
+      const muscle = (ex.primary_muscle_group || '').toLowerCase();
+      return title.includes(term) || title.includes(original) || muscle.includes(original);
+    }).slice(0, 30);
+  }
+
+  function renderExerciseResults(items) {
+    const el = document.getElementById('exercise-results');
+    if (!items.length) { el.innerHTML = '<p class="empty">Nenhum exercício encontrado.</p>'; return; }
+    el.innerHTML = items.map(ex =>
+      '<div class="exercise-result-item" data-id="' + esc(ex.id) + '" data-title="' + esc(ex.title) + '" data-muscle="' + esc(ex.primary_muscle_group || '') + '">' +
+      '<span class="er-name">' + esc(ex.title) + '</span>' +
+      (ex.primary_muscle_group ? '<span class="er-muscle">' + esc(ex.primary_muscle_group) + '</span>' : '') +
+      '<button type="button" class="er-add">+ Add</button></div>'
+    ).join('');
+    el.querySelectorAll('.exercise-result-item').forEach(item => {
+      item.addEventListener('click', function () {
+        addExerciseToWorkout(this.getAttribute('data-id'), this.getAttribute('data-title'), this.getAttribute('data-muscle'));
+      });
+    });
+  }
+
   document.getElementById('add-exercise-btn').addEventListener('click', function () {
-    document.getElementById('exercise-search-input').value = '';
-    document.getElementById('exercise-results').innerHTML = '';
+    const input = document.getElementById('exercise-search-input');
+    const resultsEl = document.getElementById('exercise-results');
+    input.value = '';
+    resultsEl.innerHTML = '<p class="loading-msg">Carregando exercícios…</p>';
     document.getElementById('exercise-modal').classList.remove('hidden');
-    document.getElementById('exercise-search-input').focus();
+    input.focus();
+
+    loadAllExercises(function (count) {
+      if (!input.value) resultsEl.innerHTML = '<p class="loading-msg">Carregando… (' + count + ' carregados)</p>';
+    }).then(function () {
+      if (!input.value) resultsEl.innerHTML = '<p class="empty">Digite para buscar entre ' + (allExercises ? allExercises.length : 0) + ' exercícios.</p>';
+    });
   });
 
   document.getElementById('close-exercise-modal').addEventListener('click', function () {
@@ -579,31 +681,17 @@
   document.getElementById('exercise-search-input').addEventListener('input', function () {
     clearTimeout(exTimer);
     const q = this.value.trim();
-    if (!q) { document.getElementById('exercise-results').innerHTML = ''; return; }
-    exTimer = setTimeout(() => searchExercises(q), 350);
-  });
-
-  function searchExercises(q) {
     const el = document.getElementById('exercise-results');
-    el.innerHTML = '<p class="loading-msg">Buscando…</p>';
-    hevyGet('/v1/exercise_templates?page=1&pageSize=20&search_term=' + encodeURIComponent(q))
-      .then(data => {
-        const items = toArr(data.exercise_templates || data.data || data);
-        if (!items.length) { el.innerHTML = '<p class="empty">Nenhum exercício encontrado.</p>'; return; }
-        el.innerHTML = items.map(ex =>
-          '<div class="exercise-result-item" data-id="' + esc(ex.id) + '" data-title="' + esc(ex.title) + '" data-muscle="' + esc(ex.primary_muscle_group || '') + '">' +
-          '<span class="er-name">' + esc(ex.title) + '</span>' +
-          (ex.primary_muscle_group ? '<span class="er-muscle">' + esc(ex.primary_muscle_group) + '</span>' : '') +
-          '<button type="button" class="er-add">+ Add</button></div>'
-        ).join('');
-        el.querySelectorAll('.exercise-result-item').forEach(item => {
-          item.addEventListener('click', function () {
-            addExerciseToWorkout(this.getAttribute('data-id'), this.getAttribute('data-title'), this.getAttribute('data-muscle'));
-          });
-        });
-      })
-      .catch(() => { el.innerHTML = '<p class="error-msg">Erro ao buscar exercícios.</p>'; });
-  }
+    if (!q) {
+      el.innerHTML = '<p class="empty">Digite para buscar.</p>';
+      return;
+    }
+    if (!allExercises) {
+      el.innerHTML = '<p class="loading-msg">Aguarde, carregando exercícios…</p>';
+      return;
+    }
+    exTimer = setTimeout(() => renderExerciseResults(filterExercises(q)), 200);
+  });
 
   function addExerciseToWorkout(templateId, title, muscle) {
     if (!workoutSession) return;
