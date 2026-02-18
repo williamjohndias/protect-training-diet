@@ -58,6 +58,36 @@
         <div id="routine-days-grid" class="routine-days-grid"></div>
       </div>
 
+      <!-- EVOLUÇÃO & PROJEÇÃO DE CARGAS -->
+      <div class="panel-card">
+        <h2>📈 Evolução & Projeção de Cargas</h2>
+
+        <!-- Projeção por dia -->
+        <div class="evo-block">
+          <div class="evo-block-title">Projeção para o próximo treino</div>
+          <select id="evo-day-select">
+            <option value="">Selecionar dia da rotina…</option>
+            <option value="0">D1 – Largura + Lateral</option>
+            <option value="1">D2 – Quad Sweep</option>
+            <option value="2">D3 – Espessura + Ombro 3D</option>
+            <option value="3">D4 – Densidade Perna + Posterior</option>
+          </select>
+          <div id="projection-table"></div>
+        </div>
+
+        <!-- Gráfico por exercício -->
+        <div class="evo-block">
+          <div class="evo-block-title">Gráfico de evolução</div>
+          <select id="evo-exercise-select">
+            <option value="">Selecionar exercício…</option>
+          </select>
+          <div id="evo-chart-wrap" class="hidden">
+            <canvas id="evo-chart" height="180"></canvas>
+          </div>
+          <p id="evo-chart-empty" class="empty hidden">Nenhum histórico encontrado para este exercício.</p>
+        </div>
+      </div>
+
       <!-- TREINOS RECENTES -->
       <div class="panel-card">
         <div class="card-header">
@@ -97,6 +127,7 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
   <script src="config.js"></script>
   <script src="script.js"></script>
 </body>

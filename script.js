@@ -776,8 +776,245 @@
   }
 
   // =====================================================================
+  // EVOLUÇÃO & PROJEÇÃO DE CARGAS
+  // =====================================================================
+
+  let evoChartInstance = null;
+
+  // Busca histórico de um exercício no Hevy
+  function fetchExerciseHistory(templateId) {
+    return hevyGet('/v1/exercise_history/' + templateId + '?page=1&pageSize=200')
+      .then(function (data) {
+        return toArr(data.exercise_history || data.history || data.data || data);
+      });
+  }
+
+  // Agrupa entradas de histórico por sessão de treino
+  function groupBySession(entries) {
+    const map = {};
+    entries.forEach(function (e) {
+      if (!e.workout_id) return;
+      if (!map[e.workout_id]) {
+        map[e.workout_id] = { date: e.workout_start_time, sets: [] };
+      }
+      map[e.workout_id].sets.push(e);
+    });
+    return Object.values(map).sort(function (a, b) {
+      return new Date(a.date) - new Date(b.date);
+    });
+  }
+
+  // Calcula projeção de carga para o próximo treino
+  function calcProjection(sessions, repRange) {
+    const normal = sessions.filter(function (s) {
+      return s.sets.some(function (set) {
+        return set.set_type === 'normal' && set.weight_kg > 0;
+      });
+    });
+    if (!normal.length) return null;
+
+    const last = normal[normal.length - 1];
+    const normalSets = last.sets.filter(function (s) {
+      return s.set_type === 'normal' && s.weight_kg > 0 && s.reps > 0;
+    });
+    if (!normalSets.length) return null;
+
+    const maxWeight = Math.max.apply(null, normalSets.map(function (s) { return parseFloat(s.weight_kg) || 0; }));
+    const avgReps = normalSets.reduce(function (sum, s) { return sum + (parseInt(s.reps) || 0); }, 0) / normalSets.length;
+    const minRep = repRange.start;
+    const maxRep = repRange.end;
+
+    let nextWeight = maxWeight;
+    let arrow = '→';
+    let tip = '';
+
+    if (Math.round(avgReps) >= maxRep) {
+      const inc = maxWeight >= 60 ? 2.5 : 1.25;
+      nextWeight = maxWeight + inc;
+      arrow = '↑';
+      tip = 'Atingiu ' + maxRep + ' reps → +' + inc + 'kg';
+    } else if (Math.round(avgReps) >= minRep) {
+      tip = 'Bom! Busque mais reps antes de aumentar.';
+    } else {
+      tip = 'Abaixo do mínimo. Mantenha o peso e foque na técnica.';
+    }
+
+    // 1RM estimado por sessão (Epley: w × (1 + reps/30))
+    const chartPoints = normal.map(function (s) {
+      const best = s.sets.filter(function (x) { return x.set_type === 'normal' && x.weight_kg > 0 && x.reps > 0; });
+      if (!best.length) return null;
+      const top = best.reduce(function (prev, cur) {
+        const prev1rm = parseFloat(prev.weight_kg) * (1 + prev.reps / 30);
+        const cur1rm  = parseFloat(cur.weight_kg)  * (1 + cur.reps  / 30);
+        return cur1rm > prev1rm ? cur : prev;
+      });
+      return {
+        date: s.date,
+        weight: parseFloat(top.weight_kg),
+        reps: top.reps,
+        e1rm: Math.round(parseFloat(top.weight_kg) * (1 + top.reps / 30)),
+      };
+    }).filter(Boolean);
+
+    return { lastDate: last.date, lastWeight: maxWeight, lastReps: Math.round(avgReps), nextWeight, arrow, tip, chartPoints };
+  }
+
+  // Renderiza a tabela de projeção para um dia
+  async function loadProjectionForDay(dayIdx) {
+    const el = document.getElementById('projection-table');
+    el.innerHTML = '<p class="loading-msg">Carregando histórico…</p>';
+
+    if (!allExercises) {
+      el.innerHTML = '<p class="loading-msg">Aguardando exercícios…</p>';
+      await loadAllExercises();
+    }
+
+    const day = MY_ROUTINE[dayIdx];
+    const allExs = day.groups.flatMap(function (g) { return g.exercises; });
+
+    const rows = [];
+    for (const ex of allExs) {
+      const match = findBestMatch(ex.search);
+      if (!match) { rows.push({ name: ex.name, error: 'Exercício não mapeado' }); continue; }
+      try {
+        const history = await fetchExerciseHistory(match.id);
+        const sessions = groupBySession(history);
+        const proj = calcProjection(sessions, parseReps(ex.reps));
+        rows.push({ name: ex.name, match: match.title, proj, repRange: ex.reps });
+      } catch (_) {
+        rows.push({ name: ex.name, error: 'Erro ao carregar' });
+      }
+    }
+
+    if (!rows.length) { el.innerHTML = '<p class="empty">Nenhum dado.</p>'; return; }
+
+    el.innerHTML = '<table class="proj-table">' +
+      '<thead><tr><th>Exercício</th><th>Último</th><th>Sugestão</th><th>Range</th></tr></thead>' +
+      '<tbody>' + rows.map(function (r) {
+        if (r.error) {
+          return '<tr><td>' + esc(r.name) + '</td><td colspan="3" class="proj-na">' + esc(r.error) + '</td></tr>';
+        }
+        if (!r.proj) {
+          return '<tr><td>' + esc(r.name) + '</td><td colspan="3" class="proj-na">Sem histórico</td></tr>';
+        }
+        const arrowClass = r.proj.arrow === '↑' ? 'proj-up' : 'proj-same';
+        return '<tr>' +
+          '<td class="proj-name">' + esc(r.name) + '</td>' +
+          '<td class="proj-last">' + r.proj.lastWeight + 'kg × ' + r.proj.lastReps + '</td>' +
+          '<td class="proj-next ' + arrowClass + '">' + r.proj.arrow + ' ' + r.proj.nextWeight + 'kg</td>' +
+          '<td class="proj-range">' + esc(r.repRange) + '</td>' +
+          '</tr>';
+      }).join('') +
+      '</tbody></table>';
+  }
+
+  document.getElementById('evo-day-select').addEventListener('change', function () {
+    const val = this.value;
+    if (val === '') { document.getElementById('projection-table').innerHTML = ''; return; }
+    loadProjectionForDay(parseInt(val));
+  });
+
+  // Popula select de exercícios para o gráfico
+  function populateExerciseSelect() {
+    const sel = document.getElementById('evo-exercise-select');
+    MY_ROUTINE.forEach(function (day) {
+      const grp = document.createElement('optgroup');
+      grp.label = day.day + ' – ' + day.name;
+      day.groups.forEach(function (g) {
+        g.exercises.forEach(function (ex) {
+          const opt = document.createElement('option');
+          opt.value = ex.search;
+          opt.textContent = ex.name;
+          opt.setAttribute('data-search', ex.search);
+          grp.appendChild(opt);
+        });
+      });
+      sel.appendChild(grp);
+    });
+  }
+
+  // Renderiza gráfico de evolução
+  async function loadEvolutionChart(searchTerm) {
+    const wrap = document.getElementById('evo-chart-wrap');
+    const emptyMsg = document.getElementById('evo-chart-empty');
+    wrap.classList.add('hidden');
+    emptyMsg.classList.add('hidden');
+
+    if (!allExercises) await loadAllExercises();
+    const match = findBestMatch(searchTerm);
+    if (!match) { emptyMsg.classList.remove('hidden'); return; }
+
+    let history;
+    try { history = await fetchExerciseHistory(match.id); } catch (_) { emptyMsg.classList.remove('hidden'); return; }
+
+    const sessions = groupBySession(history);
+    const proj = calcProjection(sessions, { start: 6, end: 12 });
+    if (!proj || !proj.chartPoints.length) { emptyMsg.classList.remove('hidden'); return; }
+
+    const pts = proj.chartPoints.slice(-20); // últimas 20 sessões
+    const labels = pts.map(function (p) { return new Date(p.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }); });
+    const e1rmData = pts.map(function (p) { return p.e1rm; });
+    const weightData = pts.map(function (p) { return p.weight; });
+
+    if (evoChartInstance) evoChartInstance.destroy();
+
+    wrap.classList.remove('hidden');
+    const ctx = document.getElementById('evo-chart').getContext('2d');
+    evoChartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: '1RM estimado (kg)',
+            data: e1rmData,
+            borderColor: '#6366f1',
+            backgroundColor: 'rgba(99,102,241,0.12)',
+            fill: true,
+            tension: 0.35,
+            pointBackgroundColor: '#6366f1',
+            pointRadius: 4,
+          },
+          {
+            label: 'Carga máxima (kg)',
+            data: weightData,
+            borderColor: '#22c55e',
+            backgroundColor: 'transparent',
+            borderDash: [5, 4],
+            tension: 0.35,
+            pointBackgroundColor: '#22c55e',
+            pointRadius: 3,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { labels: { color: '#8888a0', font: { size: 11 } } },
+          tooltip: {
+            callbacks: {
+              label: function (ctx) { return ctx.dataset.label + ': ' + ctx.raw + ' kg'; },
+            },
+          },
+        },
+        scales: {
+          x: { ticks: { color: '#8888a0', font: { size: 10 } }, grid: { color: '#2d2d35' } },
+          y: { ticks: { color: '#8888a0', font: { size: 10 } }, grid: { color: '#2d2d35' } },
+        },
+      },
+    });
+  }
+
+  document.getElementById('evo-exercise-select').addEventListener('change', function () {
+    const val = this.value;
+    if (!val) { document.getElementById('evo-chart-wrap').classList.add('hidden'); return; }
+    loadEvolutionChart(val);
+  });
+
+  // =====================================================================
   // INICIALIZAÇÃO
   // =====================================================================
+  populateExerciseSelect();
   renderRoutineDays();
 
   loadSession();

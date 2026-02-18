@@ -204,6 +204,27 @@ textarea { resize: vertical; }
 .hevy-routines-status.ok   { background: #0f2a1a; color: var(--green); }
 .hevy-routines-status.warn { background: #2a1a0f; color: var(--yellow); }
 
+/* ---- EVOLUÇÃO & PROJEÇÃO ---- */
+.evo-block { margin-bottom: 1.25rem; }
+.evo-block:last-child { margin-bottom: 0; }
+.evo-block-title { font-size: .8rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: .6rem; }
+.evo-block select { margin-bottom: .75rem; }
+
+#evo-chart-wrap { background: var(--bg); border: 1px solid var(--border); border-radius: var(--r-sm); padding: .75rem; margin-top: .5rem; }
+
+/* Tabela de projeção */
+.proj-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+.proj-table thead th { font-size: .72rem; font-weight: 600; color: var(--muted); text-align: left; padding: .35rem .5rem; border-bottom: 1px solid var(--border); }
+.proj-table tbody td { padding: .45rem .5rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.proj-table tbody tr:last-child td { border-bottom: none; }
+.proj-name { font-weight: 500; }
+.proj-last { color: var(--muted); }
+.proj-next { font-weight: 700; }
+.proj-up   { color: var(--green); }
+.proj-same { color: var(--text); }
+.proj-range { color: var(--muted); font-size: .75rem; white-space: nowrap; }
+.proj-na  { color: var(--muted); font-style: italic; }
+
 /* ---- MINHA ROTINA ---- */
 .routine-days-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .65rem; }
 @media (max-width: 480px) { .routine-days-grid { grid-template-columns: 1fr; } }
