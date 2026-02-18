@@ -6,13 +6,13 @@
   <title>Protect Training & Diet</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="app">
     <header class="header">
-      <h1>Protect Training & Diet</h1>
+      <h1 class="logo">Protect</h1>
       <nav class="tabs">
         <button type="button" class="tab active" data-tab="treino">Treino</button>
         <button type="button" class="tab" data-tab="dieta">Dieta</button>
@@ -20,86 +20,148 @@
     </header>
 
     <main class="content">
-      <!-- Aba Treino -->
+
+      <!-- ===== ABA TREINO ===== -->
       <section id="treino" class="tab-panel active">
-        <div class="panel-card">
-          <h2>Configuração Hevy</h2>
-          <p class="hint">Sua chave API está em <a href="https://hevy.com/settings?developer" target="_blank" rel="noopener">hevy.com/settings → Developer</a> (Hevy Pro).</p>
-          <div class="form-row">
-            <label for="hevy-api-key">Chave API Hevy</label>
-            <input type="password" id="hevy-api-key" placeholder="Cole sua chave API">
-            <div class="btn-group">
-              <button type="button" id="save-hevy-key">Salvar</button>
-              <button type="button" id="clear-hevy-key" class="btn-secondary">Limpar</button>
-            </div>
+
+        <!-- TREINO ATIVO (oculto por padrão) -->
+        <div id="active-workout-panel" class="panel-card hidden">
+          <div class="workout-top-bar">
+            <input id="workout-title-input" type="text" class="workout-title-input" placeholder="Nome do treino">
+            <span id="workout-timer" class="workout-timer">00:00</span>
           </div>
-          <p id="hevy-status" class="status"></p>
+          <div id="workout-exercises-list"></div>
+          <button type="button" id="add-exercise-btn" class="btn-outline btn-block">+ Adicionar exercício</button>
+          <div class="workout-footer-btns">
+            <button type="button" id="discard-workout-btn" class="btn-danger">Descartar</button>
+            <button type="button" id="finish-workout-btn" class="btn-success">Finalizar treino</button>
+          </div>
         </div>
 
+        <!-- INICIAR TREINO (visível por padrão) -->
+        <div id="start-workout-card" class="panel-card start-card">
+          <div class="start-card-body">
+            <div class="start-icon">💪</div>
+            <h2>Pronto para treinar?</h2>
+            <p>Registre exercícios e séries em tempo real.</p>
+            <button type="button" id="start-workout-btn" class="btn-primary btn-lg">Iniciar treino</button>
+          </div>
+        </div>
+
+        <!-- TREINOS RECENTES -->
         <div class="panel-card">
-          <h2>Meus treinos</h2>
-          <div class="toolbar">
-            <button type="button" id="refresh-workouts">Atualizar treinos</button>
+          <div class="card-header">
+            <h2>Treinos recentes</h2>
+            <button type="button" id="refresh-workouts-btn" class="btn-icon" title="Carregar">&#x21BA;</button>
           </div>
           <div id="workouts-list" class="list">
-            <p class="empty">Salve sua chave Hevy e clique em "Atualizar treinos".</p>
+            <p class="empty">Clique em &#x21BA; para carregar treinos do Hevy.</p>
           </div>
         </div>
 
+        <!-- ROTINAS -->
         <div class="panel-card">
-          <h2>Rotinas</h2>
+          <div class="card-header">
+            <h2>Rotinas</h2>
+            <button type="button" id="refresh-routines-btn" class="btn-icon" title="Carregar">&#x21BA;</button>
+          </div>
           <div id="routines-list" class="list">
-            <p class="empty">Carregue as rotinas após configurar a API.</p>
+            <p class="empty">Clique em &#x21BA; para carregar rotinas.</p>
           </div>
         </div>
       </section>
 
-      <!-- Aba Dieta -->
+      <!-- ===== ABA DIETA ===== -->
       <section id="dieta" class="tab-panel">
+
+        <!-- BUSCA DE ALIMENTOS -->
         <div class="panel-card">
-          <h2>Nova refeição</h2>
-          <form id="diet-form" class="form">
-            <div class="form-row">
-              <label for="meal-date">Data</label>
-              <input type="date" id="meal-date" required>
-            </div>
-            <div class="form-row">
-              <label for="meal-type">Refeição</label>
-              <select id="meal-type">
-                <option value="cafe">Café da manhã</option>
-                <option value="lanche_manha">Lanche manhã</option>
-                <option value="almoco">Almoço</option>
-                <option value="lanche_tarde">Lanche tarde</option>
-                <option value="jantar">Jantar</option>
-                <option value="ceia">Ceia</option>
-              </select>
-            </div>
-            <div class="form-row">
-              <label for="meal-description">O que comeu</label>
-              <textarea id="meal-description" rows="3" placeholder="Ex: Arroz, frango, salada..." required></textarea>
-            </div>
-            <div class="form-row">
-              <label for="meal-calories">Calorias (opcional)</label>
-              <input type="number" id="meal-calories" placeholder="Ex: 450" min="0" step="1">
-            </div>
-            <button type="submit">Adicionar refeição</button>
-          </form>
+          <h2>Buscar alimento</h2>
+          <div class="search-row">
+            <input type="text" id="food-search-input" placeholder="Ex: frango grelhado, ovo, arroz...">
+            <button type="button" id="food-search-btn">Buscar</button>
+          </div>
+          <div id="food-results"></div>
         </div>
 
+        <!-- DIÁRIO ALIMENTAR -->
         <div class="panel-card">
-          <h2>Registro de dieta</h2>
-          <div class="toolbar">
-            <label>Filtrar por data:</label>
-            <input type="date" id="filter-date">
-            <button type="button" id="filter-diet">Filtrar</button>
-            <button type="button" id="show-all-diet">Ver tudo</button>
+          <div class="card-header">
+            <h2>Diário alimentar</h2>
+            <input type="date" id="diary-date-input">
           </div>
-          <div id="diet-list" class="list">
-            <p class="empty">Nenhuma refeição registrada. Adicione acima.</p>
+          <div id="macro-totals" class="macro-totals hidden">
+            <div class="macro-item">
+              <span class="macro-value" id="total-kcal">0</span>
+              <span class="macro-label">kcal</span>
+            </div>
+            <div class="macro-divider"></div>
+            <div class="macro-item">
+              <span class="macro-value" id="total-protein">0g</span>
+              <span class="macro-label">proteína</span>
+            </div>
+            <div class="macro-item">
+              <span class="macro-value" id="total-carbs">0g</span>
+              <span class="macro-label">carbs</span>
+            </div>
+            <div class="macro-item">
+              <span class="macro-value" id="total-fat">0g</span>
+              <span class="macro-label">gordura</span>
+            </div>
+          </div>
+          <div id="diary-list" class="list">
+            <p class="empty">Nenhuma refeição registrada. Busque um alimento acima.</p>
           </div>
         </div>
       </section>
     </main>
+  </div>
+
+  <!-- ===== MODAL: BUSCA DE EXERCÍCIO ===== -->
+  <div id="exercise-modal" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Adicionar exercício</h3>
+        <button type="button" class="modal-close" id="close-exercise-modal">&#x2715;</button>
+      </div>
+      <div class="modal-body">
+        <input type="text" id="exercise-search-input" placeholder="Buscar exercício...">
+        <div id="exercise-results" class="modal-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MODAL: ADICIONAR ALIMENTO ===== -->
+  <div id="add-food-modal" class="modal-overlay hidden">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="add-food-modal-title">Adicionar ao diário</h3>
+        <button type="button" class="modal-close" id="close-food-modal">&#x2715;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <label>Refeição</label>
+          <select id="add-food-meal-type">
+            <option value="cafe">Café da manhã</option>
+            <option value="lanche_manha">Lanche manhã</option>
+            <option value="almoco">Almoço</option>
+            <option value="lanche_tarde">Lanche tarde</option>
+            <option value="jantar">Jantar</option>
+            <option value="ceia">Ceia</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Porção</label>
+          <select id="add-food-serving-select"></select>
+        </div>
+        <div class="form-row">
+          <label>Quantidade</label>
+          <input type="number" id="add-food-qty-input" value="1" min="0.1" step="0.1">
+        </div>
+        <div id="add-food-nutrition-preview" class="nutrition-preview"></div>
+        <button type="button" id="confirm-add-food-btn" class="btn-primary btn-block">Adicionar ao diário</button>
+      </div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
